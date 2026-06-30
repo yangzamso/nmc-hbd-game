@@ -46,7 +46,7 @@ function farCorner(stageR) {
 }
 
 export function GameBoard() {
-  const { equippedId, equip, unequip, bgColor, setBg } = useGameStore()
+  const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage } = useGameStore()
   const stageRef = useRef(null)
   const { w: charW, h: charH, scale: charScale } = useCharSize()
 
@@ -121,20 +121,24 @@ export function GameBoard() {
     if (!stageRef.current || saving) return
     setSaving(true)
     try {
-      await savePhotoCard(stageRef.current, bgColor)
+      await savePhotoCard(stageRef.current, bgColor, bgImage)
     } finally {
       setSaving(false)
     }
   }, [bgColor, saving])
 
   return (
-    <div className={styles.board} style={{ '--bg': bgColor }}>
+    <div className={styles.board}>
 
       {/* 스테이지 영역 */}
       <div className={styles.stageWrap}>
       <div
         ref={stageRef}
         className={styles.stage}
+        style={bgImage
+          ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+          : { background: bgColor }
+        }
         onPointerMove={onStagePointerMove}
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}
@@ -235,14 +239,20 @@ export function GameBoard() {
         <div className={styles.section}>
           <p className={styles.sectionTitle}>배경</p>
           <div className={styles.row}>
-            {BACKGROUNDS.map((bg) => (
-              <div key={bg.id}
-                className={`${styles.bgCard} ${bgColor === bg.color ? styles.bgActive : ''}`}
-                onClick={() => setBg(bg.color)}>
-                <div className={styles.bgSwatch} style={{ background: bg.color }} />
-                <span className={styles.cardName}>{bg.label}</span>
-              </div>
-            ))}
+            {BACKGROUNDS.map((bg) => {
+              const isActive = bg.image ? bgImage === bg.image : bgColor === bg.color
+              return (
+                <div key={bg.id}
+                  className={`${styles.bgCard} ${isActive ? styles.bgActive : ''}`}
+                  onClick={() => bg.image ? setBgImage(bg.image) : setBg(bg.color)}>
+                  {bg.image
+                    ? <img src={bg.image} alt={bg.label} className={styles.bgImgThumb} />
+                    : <div className={styles.bgSwatch} style={{ background: bg.color }} />
+                  }
+                  <span className={styles.cardName}>{bg.label}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
 

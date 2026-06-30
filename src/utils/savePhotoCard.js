@@ -1,11 +1,11 @@
 import html2canvas from 'html2canvas'
 
-export async function savePhotoCard(stageEl, bgColor = '#ffffff') {
+export async function savePhotoCard(stageEl, bgColor = '#ffffff', bgImage = null) {
   // 스테이지 캡처
   const captured = await html2canvas(stageEl, {
-    backgroundColor: bgColor,
+    backgroundColor: bgImage ? null : bgColor,
     useCORS: true,
-    scale: 2, // 고해상도
+    scale: 2,
     logging: false,
   })
 

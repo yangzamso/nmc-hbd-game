@@ -15,6 +15,7 @@ export const PROPS = [
 ]
 
 export const BACKGROUNDS = [
+  { id: 'bg_stage',   label: '무대',    image: '/bg_stage.jpg' },
   { id: 'bg_white',   label: '흰색',    color: '#ffffff' },
   { id: 'bg_cream',   label: '크림',    color: '#fff8ee' },
   { id: 'bg_sky',     label: '하늘',    color: '#dff0ff' },
