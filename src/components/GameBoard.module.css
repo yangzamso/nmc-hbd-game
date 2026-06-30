@@ -1,0 +1,168 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--bg, #ffffff);
+}
+
+/* 스테이지 — 50vh */
+.stage {
+  height: 60dvh;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: inherit;
+  touch-action: none;
+  overflow: hidden;
+}
+
+.character { position: relative; flex-shrink: 0; }
+
+.removeBtn {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 7px 22px;
+  border: none;
+  border-radius: 20px;
+  background: #ff7a7a;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+  z-index: 50;
+}
+
+/* 패널 — 고정 40dvh + 세로 스크롤 */
+.panel {
+  height: 40dvh;
+  flex-shrink: 0;
+  background: #fff;
+  border-top: 2px solid #e5e5e5;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 각 섹션 */
+.section {
+  padding: 12px 12px 0;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+/* 가로 스크롤 행 */
+.row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+.row::-webkit-scrollbar { height: 3px; }
+.row::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+/* 의상/아이템 카드 */
+.card {
+  flex-shrink: 0;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 6px;
+  cursor: pointer;
+  position: relative;
+  background: #fafafa;
+  transition: border-color 0.15s;
+  touch-action: manipulation;
+}
+.cardActive {
+  border-color: #ffb347;
+  background: #fff8ee;
+}
+.cardImg {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  user-select: none;
+  touch-action: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.cardName {
+  font-size: 10px;
+  color: #555;
+  text-align: center;
+  line-height: 1.3;
+}
+.badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: #ffb347;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 8px;
+}
+
+/* 배경 카드 */
+.bgCard {
+  flex-shrink: 0;
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: border-color 0.15s;
+}
+.bgActive { border-color: #888; }
+.bgSwatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+}
+
+/* 저장 버튼 */
+.saveSection {
+  padding: 16px 12px 20px;
+  display: flex;
+  justify-content: center;
+}
+.saveBtn {
+  width: 100%;
+  max-width: 280px;
+  padding: 14px 0;
+  border: none;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.35);
+  transition: opacity 0.15s, transform 0.1s;
+}
+.saveBtn:active { transform: scale(0.97); opacity: 0.9; }
+.saveBtn:disabled { opacity: 0.55; cursor: default; }
+
+.hidden { visibility: hidden; }

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python \"C:\\\\exam\\\\nmc-game\\\\assets\\\\crop_items.py\")",
+      "PowerShell(python \"C:\\\\exam\\\\nmc-game\\\\crop_items.py\")"
+    ]
+  }
+}
