@@ -52,7 +52,7 @@ export function GameBoard() {
 
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [placedProps, setPlacedProps] = useState({})
+  const [placedProp, setPlacedProp] = useState(null)
   const [stageDrag, setStageDrag] = useState(null)   // 스테이지 내 의상 드래그
   const [propDrag, setPropDrag] = useState(null)     // 스테이지 내 소품 드래그
 
@@ -77,23 +77,24 @@ export function GameBoard() {
     setStageDrag({ offsetX: e.clientX - (stageR.left + placed.x), offsetY: e.clientY - (stageR.top + placed.y) })
   }, [placed])
 
-  // ── 소품 탭: 스테이지 모서리에 배치 ──
+  // ── 소품 탭: 1개만 선택, 같은 거 누르면 제거 ──
   const onPropClick = useCallback((propId) => {
+    if (placedProp?.propId === propId) { setPlacedProp(null); return }
     const stageR = getStageRect()
     if (!stageR) return
     const pos = clampToStage(farCorner(stageR).x, farCorner(stageR).y, stageR)
-    setPlacedProps((prev) => ({ ...prev, [propId]: pos }))
-  }, [])
+    setPlacedProp({ propId, ...pos })
+  }, [placedProp])
 
   // ── 스테이지 내 소품 드래그 시작 ──
-  const onPropPointerDown = useCallback((e, propId) => {
+  const onPropPointerDown = useCallback((e) => {
+    if (!placedProp) return
     e.preventDefault()
     e.stopPropagation()
     e.currentTarget.setPointerCapture(e.pointerId)
     const stageR = getStageRect()
-    const pos = placedProps[propId] || { x: 0, y: 0 }
-    setPropDrag({ propId, offsetX: e.clientX - (stageR.left + pos.x), offsetY: e.clientY - (stageR.top + pos.y) })
-  }, [placedProps])
+    setPropDrag({ offsetX: e.clientX - (stageR.left + placedProp.x), offsetY: e.clientY - (stageR.top + placedProp.y) })
+  }, [placedProp])
 
   // ── 스테이지 내 포인터 이동 ──
   const onStagePointerMove = useCallback((e) => {
@@ -105,7 +106,7 @@ export function GameBoard() {
     } else if (propDrag) {
       const raw = { x: e.clientX - propDrag.offsetX - stageR.left, y: e.clientY - propDrag.offsetY - stageR.top }
       const clamped = clampToStage(raw.x, raw.y, stageR)
-      setPlacedProps((prev) => ({ ...prev, [propDrag.propId]: clamped }))
+      setPlacedProp((prev) => prev ? { ...prev, ...clamped } : prev)
     }
   }, [stageDrag, placed, propDrag])
 
@@ -167,23 +168,24 @@ export function GameBoard() {
           )
         })()}
 
-        {/* 배치된 소품들 */}
-        {PROPS.map((prop) => {
-          const pos = placedProps[prop.id]
-          if (!pos) return null
+        {/* 배치된 소품 */}
+        {placedProp && (() => {
+          const prop = PROPS.find((p) => p.id === placedProp.propId)
+          if (!prop) return null
           return (
-            <img key={prop.id} src={prop.image} alt={prop.name}
-              onPointerDown={(e) => onPropPointerDown(e, prop.id)}
+            <img src={prop.image} alt={prop.name}
+              onPointerDown={onPropPointerDown}
               style={{
-                position: 'absolute', left: pos.x, top: pos.y,
+                position: 'absolute', left: placedProp.x, top: placedProp.y,
                 transform: 'translate(-50%,-50%)',
                 width: Math.round(80 * charScale / SCALE),
                 objectFit: 'contain',
-                cursor: 'grab', touchAction: 'none', userSelect: 'none', zIndex: 20,
+                cursor: propDrag ? 'grabbing' : 'grab',
+                touchAction: 'none', userSelect: 'none', zIndex: 20,
               }}
             />
           )
-        })}
+        })()}
 
         {/* 벗기기 버튼 */}
         {placed && (
@@ -222,7 +224,7 @@ export function GameBoard() {
           <p className={styles.sectionTitle}>아이템</p>
           <div className={styles.row}>
             {PROPS.map((prop) => {
-              const isPlaced = !!placedProps[prop.id]
+              const isPlaced = placedProp?.propId === prop.id
               return (
                 <div key={prop.id}
                   className={`${styles.card} ${isPlaced ? styles.cardActive : ''}`}
