@@ -1,17 +1,20 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { COSTUMES, PROPS, BACKGROUNDS, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
+import { COSTUMES, PROPS, BACKGROUNDS, CHARACTER_CROP, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
 import { useGameStore } from '../store/gameStore'
 import { savePhotoCard } from '../utils/savePhotoCard'
 import styles from './GameBoard.module.css'
+
+const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1  // 385
+const CHAR_NAT_H = CHARACTER_CROP.y2 - CHARACTER_CROP.y1  // 599
 
 function useCharSize() {
   const [size, setSize] = useState({ w: CHAR_DISPLAY_W, h: CHAR_DISPLAY_H, scale: SCALE })
   useEffect(() => {
     const calc = () => {
       const stageH = window.innerHeight * 0.60 * 0.80
-      const stageW = window.innerWidth * 0.60
-      const s = Math.min(stageW / 214, stageH / 320)
-      setSize({ w: Math.round(214 * s), h: Math.round(320 * s), scale: s })
+      const stageW = window.innerWidth * 0.80
+      const s = Math.min(stageW / CHAR_NAT_W, stageH / CHAR_NAT_H)
+      setSize({ w: Math.round(CHAR_NAT_W * s), h: Math.round(CHAR_NAT_H * s), scale: s })
     }
     calc()
     window.addEventListener('resize', calc)
