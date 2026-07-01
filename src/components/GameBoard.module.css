@@ -2,7 +2,9 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: radial-gradient(ellipse at center top, #ffffff 0%, #f5f5f5 60%, #eeeeee 100%);
+  background: #f5f5f5;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 스테이지 외곽 — canvase.png 배경 */

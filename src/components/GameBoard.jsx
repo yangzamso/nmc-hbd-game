@@ -124,17 +124,21 @@ export function GameBoard() {
   }, [bgColor, saving])
 
   return (
-    <div className={styles.board}>
+    <div className={styles.board}
+      style={bgImage
+        ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+        : bgColor
+          ? { background: bgColor }
+          : undefined
+      }
+    >
 
       {/* 스테이지 영역 */}
       <div className={styles.stageWrap}>
         <div
           ref={stageRef}
           className={styles.stage}
-        style={bgImage
-          ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-          : { background: bgColor }
-        }
+        style={{ background: '#ffffff' }}
         onPointerMove={onStagePointerMove}
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}
@@ -186,7 +190,7 @@ export function GameBoard() {
         <img src="/canvase-overlay.png" alt="" className={styles.canvasOverlay} />
 
         {/* 초기화 버튼 */}
-        {(placed || placedProps.length > 0 || bgColor !== '#ffffff' || bgImage) && (
+        {(placed || placedProps.length > 0 || bgColor !== null || bgImage) && (
           <button
             className={`${styles.removeBtn} ${saving ? styles.hidden : ''}`}
             onClick={() => { reset(); setPlaced(null); setPlacedProps([]) }}
