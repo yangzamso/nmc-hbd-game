@@ -35,8 +35,11 @@ const charNatH = CHARACTER_CROP.y2 - CHARACTER_CROP.y1
 export const SCALE = CHAR_DISPLAY_W / charNatW
 export const CHAR_DISPLAY_H = Math.round(charNatH * SCALE)
 
+// 의상/아이템 크기 보정 — 캐릭터 대비 의상이 크면 낮추고 작으면 높임
+const COSTUME_SCALE_FACTOR = 0.75
+
 export function getCostumeDisplaySize(costume, scale) {
-  const s = scale ?? SCALE
+  const s = (scale ?? SCALE) * COSTUME_SCALE_FACTOR
   const { x1, y1, x2, y2 } = costume.crop
   return { w: Math.round((x2 - x1) * s), h: Math.round((y2 - y1) * s) }
 }

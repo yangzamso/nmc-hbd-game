@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { COSTUMES, PROPS, BACKGROUNDS, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize } from '../data/costumes'
+import { COSTUMES, PROPS, BACKGROUNDS, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
 import { useGameStore } from '../store/gameStore'
 import { savePhotoCard } from '../utils/savePhotoCard'
 import styles from './GameBoard.module.css'
@@ -178,7 +178,7 @@ export function GameBoard() {
               style={{
                 position: 'absolute', left: placedProp.x, top: placedProp.y,
                 transform: 'translate(-50%,-50%)',
-                width: Math.round(80 * charScale / SCALE),
+                width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR),
                 objectFit: 'contain',
                 cursor: propDrag ? 'grabbing' : 'grab',
                 touchAction: 'none', userSelect: 'none', zIndex: 20,
