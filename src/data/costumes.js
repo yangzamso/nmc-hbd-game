@@ -24,10 +24,7 @@ export const BACKGROUNDS = [
   { id: 'bg_yellow',     label: '노랑',    image: '/bg-yellow.jpg' },
   { id: 'bg_white',    label: '흰색',    color: '#ffffff' },
   { id: 'bg_cream',    label: '크림',    color: '#fff8ee' },
-  { id: 'bg_sky',      label: '하늘',    color: '#dff0ff' },
   { id: 'bg_mint',     label: '민트',    color: '#d6f5ee' },
-  { id: 'bg_pink',     label: '핑크',    color: '#ffe4f0' },
-  { id: 'bg_yellow',   label: '노랑',    color: '#fffbcc' },
   { id: 'bg_lavender', label: '라벤더',  color: '#ede8ff' },
   { id: 'bg_gray',     label: '그레이',  color: '#f0f0f0' },
 ]
