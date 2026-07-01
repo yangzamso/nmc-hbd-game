@@ -100,6 +100,10 @@
   border-color: #ffb347;
   background: #fff8ee;
 }
+.cardDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
 .cardImg {
   width: 64px;
   height: 64px;
