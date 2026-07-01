@@ -6,7 +6,7 @@ export const COSTUMES = [
   { id: 'ajussi',     name: '아저씨',        image: '/items/ajussi.png',     crop: { x1: 1816, y1: 3,   x2: 2244, y2: 666  } },
   { id: 'strawberry', name: '딸기',          image: '/items/strawberry.png', crop: { x1: 21,   y1: 831, x2: 538,  y2: 1558 } },
   { id: 'bungae',     name: '번개맨',        image: '/items/bungae.png',     crop: { x1: 587,  y1: 806, x2: 1027, y2: 1546 } },
-  { id: 'wolf',       name: '하얀늑대',      image: '/items/wolf.png',       crop: { x1: 1097, y1: 814, x2: 1526, y2: 1463 } },
+  { id: 'wolf',       name: '하얀늑대',      image: '/items/wolf.png',       crop: { x1: 1144, y1: 936, x2: 1475, y2: 1372 } },
 ]
 
 export const PROPS = [
