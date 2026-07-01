@@ -4,23 +4,8 @@ import { useGameStore } from '../store/gameStore'
 import { savePhotoCard } from '../utils/savePhotoCard'
 import styles from './GameBoard.module.css'
 
-const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1  // 385
-const CHAR_NAT_H = CHARACTER_CROP.y2 - CHARACTER_CROP.y1  // 599
-
 function useCharSize() {
-  const [size, setSize] = useState({ w: CHAR_DISPLAY_W, h: CHAR_DISPLAY_H, scale: SCALE })
-  useEffect(() => {
-    const calc = () => {
-      const stageH = window.innerHeight * 0.60 * 0.80
-      const stageW = window.innerWidth * 0.55
-      const s = Math.min(stageW / CHAR_NAT_W, stageH / CHAR_NAT_H)
-      setSize({ w: Math.round(CHAR_NAT_W * s), h: Math.round(CHAR_NAT_H * s), scale: s })
-    }
-    calc()
-    window.addEventListener('resize', calc)
-    return () => window.removeEventListener('resize', calc)
-  }, [])
-  return size
+  return { w: CHAR_DISPLAY_W, h: CHAR_DISPLAY_H, scale: SCALE }
 }
 
 // 스테이지 경계 내로 좌표 클램핑
