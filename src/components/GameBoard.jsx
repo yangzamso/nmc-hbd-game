@@ -193,9 +193,6 @@ export function GameBoard() {
           )
         })}
 
-        {/* 캔버스 오버레이 (프레임) */}
-        <img src="/canvase-overlay.png" alt="" className={styles.canvasOverlay} />
-
         {/* 초기화 버튼 */}
         {(placed || placedProps.length > 0 || bgColor !== null || bgImage) && (
           <button
