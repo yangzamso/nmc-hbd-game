@@ -12,12 +12,16 @@
   background: #ebebeb;
   padding: 14px 16px;
   touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 실제 캔버스 — 둥근 사각형 */
+/* 실제 캔버스 — 포토카드 비율 5.5 x 8.5 */
 .stage {
-  width: 100%;
+  aspect-ratio: 55 / 85;
   height: 100%;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
