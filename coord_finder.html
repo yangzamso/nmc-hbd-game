@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>좌표 파인더 — nmc.png</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #222; color: #fff; font-family: monospace; }
+  #top {
+    position: sticky; top: 0; z-index: 100;
+    background: #111; padding: 10px 16px;
+    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+    border-bottom: 1px solid #444;
+  }
+  #top span { font-size: 13px; }
+  #top b { color: #ffd; }
+  #actions { display: flex; gap: 8px; margin-left: auto; }
+  button {
+    padding: 5px 12px; border: none; border-radius: 6px;
+    background: #444; color: #fff; cursor: pointer; font-size: 12px;
+  }
+  button:hover { background: #666; }
+  #container {
+    padding: 16px;
+    display: flex; justify-content: center;
+  }
+  #canvas-wrap { position: relative; display: inline-block; cursor: crosshair; }
+  canvas { display: block; }
+  #overlay {
+    position: absolute; top: 0; left: 0;
+    border: 2px dashed #f90; pointer-events: none;
+    display: none;
+  }
+  #log-area {
+    background: #111; padding: 12px 16px;
+    max-height: 200px; overflow-y: auto;
+    border-top: 1px solid #444;
+  }
+  #log { font-size: 12px; line-height: 1.8; color: #aef; }
+</style>
+</head>
+<body>
+
+<div id="top">
+  <span>마우스 위치: <b id="pos">-</b></span>
+  <span>선택 영역: <b id="sel">-</b></span>
+  <div id="actions">
+    <button onclick="clearLog()">전체삭제</button>
+    <button onclick="copyLog()">전체복사</button>
+  </div>
+</div>
+
+<div id="container">
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+    <div id="overlay"></div>
+  </div>
+</div>
+
+<div id="log-area">
+  <div id="log">← 드래그해서 영역 선택 후 레이블 입력</div>
+</div>
+
+<script>
+const img = new Image();
+img.src = '/nmc.png';
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const overlay = document.getElementById('overlay');
+const posEl = document.getElementById('pos');
+const selEl = document.getElementById('sel');
+const logEl = document.getElementById('log');
+
+let scale = 1;
+let startX, startY, dragging = false;
+
+img.onload = () => {
+  const maxW = Math.min(window.innerWidth * 0.95, img.naturalWidth);
+  scale = maxW / img.naturalWidth;
+  canvas.width = Math.round(img.naturalWidth * scale);
+  canvas.height = Math.round(img.naturalHeight * scale);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+};
+
+function toNatural(px, py) {
+  return { x: Math.round(px / scale), y: Math.round(py / scale) };
+}
+
+function canvasXY(e) {
+  const r = canvas.getBoundingClientRect();
+  return { px: e.clientX - r.left, py: e.clientY - r.top };
+}
+
+canvas.addEventListener('mousemove', (e) => {
+  const { px, py } = canvasXY(e);
+  const { x, y } = toNatural(px, py);
+  posEl.textContent = `(${x}, ${y})`;
+
+  if (dragging) {
+    const x0 = Math.min(startX, px), y0 = Math.min(startY, py);
+    const w = Math.abs(px - startX), h = Math.abs(py - startY);
+    overlay.style.display = 'block';
+    overlay.style.left = x0 + 'px'; overlay.style.top = y0 + 'px';
+    overlay.style.width = w + 'px'; overlay.style.height = h + 'px';
+
+    const n0 = toNatural(x0, y0), n1 = toNatural(x0 + w, y0 + h);
+    selEl.textContent = `(${n0.x}, ${n0.y}, ${n1.x}, ${n1.y})`;
+  }
+});
+
+canvas.addEventListener('mousedown', (e) => {
+  const { px, py } = canvasXY(e);
+  startX = px; startY = py; dragging = true;
+  overlay.style.display = 'none';
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  if (!dragging) return;
+  dragging = false;
+  const { px, py } = canvasXY(e);
+  const x0 = Math.min(startX, px), y0 = Math.min(startY, py);
+  const w = Math.abs(px - startX), h = Math.abs(py - startY);
+  if (w < 5 && h < 5) return;
+
+  const n0 = toNatural(x0, y0), n1 = toNatural(x0 + w, y0 + h);
+  const coord = `(${n0.x}, ${n0.y}, ${n1.x}, ${n1.y})`;
+
+  const label = prompt('이 영역의 이름을 입력하세요:', '');
+  if (label === null) return;
+
+  const line = document.createElement('div');
+  line.textContent = `${label || '(이름없음)'}: ${coord}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+});
+
+canvas.addEventListener('mouseleave', () => { dragging = false; });
+
+function clearLog() { logEl.innerHTML = ''; }
+function copyLog() {
+  const text = Array.from(logEl.querySelectorAll('div')).map(d => d.textContent).join('\n');
+  navigator.clipboard.writeText(text);
+}
+</script>
+</body>
+</html>
