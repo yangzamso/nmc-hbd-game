@@ -7,7 +7,7 @@
 
 /* 스테이지 외곽 — 회색 여백 영역 */
 .stageWrap {
-  height: 60dvh;
+  height: 48dvh;
   flex-shrink: 0;
   background: #ebebeb;
   padding: 14px 16px;
