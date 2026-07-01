@@ -34,7 +34,7 @@ function farCorner(stageR) {
 }
 
 export function GameBoard() {
-  const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage } = useGameStore()
+  const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage, reset } = useGameStore()
   const stageRef = useRef(null)
   const { w: charW, h: charH, scale: charScale } = useCharSize()
 
@@ -185,13 +185,13 @@ export function GameBoard() {
         {/* 캔버스 오버레이 (프레임) */}
         <img src="/canvase-overlay.png" alt="" className={styles.canvasOverlay} />
 
-        {/* 벗기기 버튼 */}
-        {placed && (
+        {/* 초기화 버튼 */}
+        {(placed || placedProps.length > 0 || bgColor !== '#ffffff' || bgImage) && (
           <button
             className={`${styles.removeBtn} ${saving ? styles.hidden : ''}`}
-            onClick={() => { unequip(); setPlaced(null) }}
+            onClick={() => { reset(); setPlaced(null); setPlacedProps([]) }}
           >
-            벗기기
+            초기화
           </button>
         )}
         </div>
