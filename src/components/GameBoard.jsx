@@ -172,7 +172,7 @@ export function GameBoard() {
               onPointerDown={(e) => onPropPointerDown(e, pp.propId)}
               style={{
                 position: 'absolute', left: pp.x, top: pp.y,
-                transform: 'translate(-50%,-50%)',
+                transform: `translate(-50%,-50%) rotate(${prop.rotate ?? 0}deg)`,
                 width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR * (prop.propScale ?? 1)),
                 objectFit: 'contain',
                 cursor: propDrag?.propId === pp.propId ? 'grabbing' : 'grab',

@@ -14,7 +14,7 @@ export const PROPS = [
   { id: 'item_rose',       name: '장미',      image: '/items/item_rose.png',       propScale: 1.5 },
   { id: 'item_hat',        name: '모자',      image: '/items/item_hat.png',        propScale: 1.5 },
   { id: 'item_chupachups', name: '츄팝츕스',  image: '/items/item_chupachups.png' },
-  { id: 'item_magnifier',  name: '돋보기',    image: '/items/item_magnifier.png' },
+  { id: 'item_magnifier',  name: '돋보기',    image: '/items/item_magnifier.png', rotate: -10 },
 ]
 
 export const BACKGROUNDS = [
