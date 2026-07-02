@@ -56,10 +56,8 @@
 }
 
 .removeBtn {
-  position: absolute;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  margin: 10px auto 0;
   padding: 7px 22px;
   border: none;
   border-radius: 20px;
@@ -69,7 +67,6 @@
   cursor: pointer;
   touch-action: manipulation;
   white-space: nowrap;
-  z-index: 50;
 }
 
 /* 패널 — 고정 40dvh + 세로 스크롤 */

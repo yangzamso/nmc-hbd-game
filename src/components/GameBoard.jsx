@@ -193,18 +193,19 @@ export function GameBoard() {
           )
         })}
 
-        {/* 초기화 버튼 */}
-        {(placed || placedProps.length > 0 || bgColor !== null || bgImage) && (
-          <button
-            className={`${styles.removeBtn} ${saving ? styles.hidden : ''}`}
-            onClick={() => { reset(); setPlaced(null); setPlacedProps([]) }}
-          >
-            초기화
-          </button>
-        )}
         </div>
         <img src="/canvase-overlay.png" className={styles.frame} alt="" />
       </div>
+
+      {/* 초기화 버튼 */}
+      {(placed || placedProps.length > 0 || bgColor !== null || bgImage) && (
+        <button
+          className={`${styles.removeBtn} ${saving ? styles.hidden : ''}`}
+          onClick={() => { reset(); setPlaced(null); setPlacedProps([]) }}
+        >
+          초기화
+        </button>
+      )}
 
       {/* 패널 */}
       <div className={styles.panel}>
