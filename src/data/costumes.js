@@ -26,7 +26,7 @@ export const BACKGROUNDS = [
   { id: 'bg_mint',       label: '민트',   image: '/bg-mint.jpg' },
 ]
 
-export const SCALE = 0.6
+export const SCALE = 0.5
 const charNatW = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const charNatH = CHARACTER_CROP.y2 - CHARACTER_CROP.y1
 export const CHAR_DISPLAY_W = Math.round(charNatW * SCALE)

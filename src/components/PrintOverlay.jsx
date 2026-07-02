@@ -54,7 +54,8 @@ export function PrintOverlay({ printData, stageVisualWidth, boardRef, onClose })
   // 슬롯 너비 비율: 200/265 ≈ 75.5%  /  슬롯 위치: y=95/302 ≈ 31.5%
   const SLOT_Y_RATIO = 95 / 302
   // 카드: 스테이지 너비 고정 / 프린터: 카드 대비 독립적으로 크게
-  const cardW    = Math.round((stageVisualWidth ?? 160) * 0.55)
+  // 프린터 도형 폭 380px 확대에 맞춰 카드도 비례 확대 (기준 스테이지 폭 405px에서 300px가 되도록 0.74)
+  const cardW    = Math.round((stageVisualWidth ?? 160) * 0.74)
   const printerW = boardRef.current?.getBoundingClientRect().width ?? window.innerWidth
   const printerH = Math.round(printerW * 302 / 265)
   const cardH    = Math.round(cardW * 4 / 3)
@@ -69,12 +70,12 @@ export function PrintOverlay({ printData, stageVisualWidth, boardRef, onClose })
         style={{ position: 'relative', width: printerW, height: sceneH }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Layer 4 (back): printer.png — 카드 뒤에 위치 */}
-        <img src="/printer.png" alt=""
+        {/* Layer 4 (back): printer.svg — 카드 뒤에 위치 */}
+        <img src="/printer.svg" alt=""
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1, display: 'block' }} />
 
-        {/* Layer 3: 커버 배경 — 화면 상단부터 슬롯 위치까지 전체를 가림 */}
-        <div className={styles.printCover} style={{ height: 88 + slotY }} />
+        {/* Layer 3: 커버 배경 — 화면 상단부터 슬롯 위치까지 전체를 가림 (28 = printOverlay의 padding-top과 동기화) */}
+        <div className={styles.printCover} style={{ height: 28 + slotY }} />
 
         {/* 포토카드 — 슬롯(slotY)에서 나옴, z=2 */}
         <div style={{
@@ -86,8 +87,8 @@ export function PrintOverlay({ printData, stageVisualWidth, boardRef, onClose })
             className={styles.printCard} onClick={onPrintDownload} />
         </div>
 
-        {/* Layer 1 (front): printer-top.png — 슬롯 투명 영역으로 카드가 보임 */}
-        <img src="/printer-top.png" alt=""
+        {/* Layer 1 (front): printer-top.svg — 슬롯 투명 영역으로 카드가 보임 */}
+        <img src="/printer-top.svg" alt=""
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 4, display: 'block' }} />
       </div>
       <button type="button" className={styles.replayBtn} onClick={onReplay} aria-label="애니메이션 다시 재생">

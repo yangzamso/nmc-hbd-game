@@ -64,7 +64,9 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
 
   // 캐릭터 실제 픽셀 bounding box 계산 → 의상 포함 실제 높이/너비 기준으로 중앙 배치
   const bounds = getNonTransparentBounds(captured)
-  const CHAR_SCALE = 1.2
+  // 코디 화면의 SCALE(costumes.js)이 0.6→0.5로 줄어든 만큼 보정(1.2 × 0.6/0.5)해서
+  // 인쇄 결과물은 SCALE=0.6이었을 때와 동일하게 유지
+  const CHAR_SCALE = 1.44
 
   let drawX, drawY, scaledW, scaledH, srcX, srcY, srcW, srcH
   if (bounds) {

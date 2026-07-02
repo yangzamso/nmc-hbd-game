@@ -20,7 +20,8 @@
   align-items: center;
   justify-content: flex-start;
   z-index: 200;
-  padding-top: 88px;
+  /* 프린터를 60px 위로 이동 (기존 88px → 28px). PrintOverlay.jsx의 printCover height 계산과 값 동기화 필요 */
+  padding-top: 28px;
 }
 
 /* 프린터 상단 커버 — 오버레이 배경색 + 동일 그레인 */
