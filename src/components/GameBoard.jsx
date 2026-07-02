@@ -284,8 +284,9 @@ export function GameBoard() {
         const printerW = Math.min(rawPrinterW, window.innerWidth - 24)
         const printerH = Math.round(printerW * 408 / 612)
         const cardW = Math.round(printerW * 0.548)
-        // 프린터 하단이 카드 상단을 덮는 겹침량
-        const overlapAmount = Math.round(printerH * 0.18)
+        // 카드 상단이 프린터 슬롯 위치에서 나오도록 겹침량 설정
+        // printer.png 슬롯이 약 72% 지점 → 카드 top = printerH * 0.72
+        const overlapAmount = Math.round(printerH * 0.28)
         return (
           <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
             <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
