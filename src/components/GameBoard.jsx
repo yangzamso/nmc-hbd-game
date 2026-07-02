@@ -280,8 +280,9 @@ export function GameBoard() {
 
       {/* 프린트 애니메이션 오버레이 */}
       {printData && (() => {
-        const cardW = stageVisualWidth ?? 160
-        const printerW = Math.round(cardW / 0.548)
+        const rawPrinterW = Math.round((stageVisualWidth ?? 160) / 0.548)
+        const printerW = Math.min(rawPrinterW, window.innerWidth - 24)
+        const cardW = Math.round(printerW * 0.548)
         return (
           <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
             <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
