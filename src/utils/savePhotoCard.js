@@ -12,8 +12,10 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   const sh = captured.height
 
   const padH   = Math.round(sw * 0.06)
-  const padTop  = Math.round(sw * 0.20)   // padBot과 같게 → 캐릭터 수직 중앙
-  const padBot  = Math.round(sw * 0.22)
+  // 캐릭터 visible 중심이 stage 56.9% 위치에 있으므로
+  // 카드 중앙 정렬하려면 padBot = padTop + sw*0.20 이 되어야 함
+  const padTop  = Math.round(sw * 0.08)
+  const padBot  = Math.round(sw * 0.28)
   const cardW   = sw + padH * 2
   const cardH   = sh + padTop + padBot
 
