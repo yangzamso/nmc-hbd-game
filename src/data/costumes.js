@@ -18,15 +18,9 @@ export const PROPS = [
 ]
 
 export const BACKGROUNDS = [
-  { id: 'bg_stage',      label: '무대',    image: '/bg-stage.jpg' },
   { id: 'bg_pink_star',  label: '핑크별',  image: '/bg-pink-star.jpg' },
   { id: 'bg_sky_check',  label: '하늘체크',image: '/bg-sky-check.jpg' },
   { id: 'bg_yellow',     label: '노랑',    image: '/bg-yellow.jpg' },
-  { id: 'bg_white',    label: '흰색',    color: '#ffffff' },
-  { id: 'bg_cream',    label: '크림',    color: '#fff8ee' },
-  { id: 'bg_mint',     label: '민트',    color: '#d6f5ee' },
-  { id: 'bg_lavender', label: '라벤더',  color: '#ede8ff' },
-  { id: 'bg_gray',     label: '그레이',  color: '#f0f0f0' },
 ]
 
 export const CHAR_DISPLAY_W = 162
