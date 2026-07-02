@@ -285,7 +285,7 @@ export function GameBoard() {
         const SLOT_W_RATIO = 200 / 265
         const SLOT_Y_RATIO = 95 / 302
         const stageW   = stageVisualWidth ?? 160
-        const printerW = Math.min(Math.round(stageW / SLOT_W_RATIO * 1.5), window.innerWidth - 24)
+        const printerW = Math.min(Math.round(stageW / SLOT_W_RATIO * 1.7), window.innerWidth - 24)
         const printerH = Math.round(printerW * 302 / 265)
         const cardW    = Math.round(printerW * SLOT_W_RATIO * 0.9)
         const cardH    = Math.round(cardW * 4 / 3)
