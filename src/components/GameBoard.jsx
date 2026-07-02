@@ -134,7 +134,7 @@ export function GameBoard() {
     <div className={styles.board}>
 
       {/* 스테이지 영역 */}
-      <div className={styles.stageWrap}
+      <div className={styles.bg}
         style={bgImage
           ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
           : bgColor
@@ -203,7 +203,7 @@ export function GameBoard() {
           </button>
         )}
         </div>
-        <img src="/canvase-overlay.png" className={styles.stageOverlay} alt="" />
+        <img src="/canvase-overlay.png" className={styles.frame} alt="" />
       </div>
 
       {/* 패널 */}

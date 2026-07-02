@@ -8,7 +8,7 @@
 }
 
 /* 스테이지 외곽 — canvase.png 배경 */
-.stageWrap {
+.bg {
   flex-shrink: 0;
   width: 120%;
   aspect-ratio: 1123 / 1401;
@@ -36,7 +36,7 @@
 }
 
 /* canvase-overlay — 프레임 레이어 */
-.stageOverlay {
+.frame {
   position: absolute;
   inset: 0;
   width: 100%;
