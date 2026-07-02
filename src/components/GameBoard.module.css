@@ -231,7 +231,7 @@
 .printOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: #ffffff;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -250,7 +250,6 @@
 /* 프린터 + 카드를 겹치는 컨테이너 */
 .printerWrap {
   position: relative;
-  width: 86%;
 }
 
 .printerImg {
@@ -261,12 +260,10 @@
   pointer-events: none;
 }
 
-/* 카드: 슬롯 위치(top 41.2%)에서 슬롯 너비(22.5%~77.3%)에 맞춰 배치 */
+/* 카드: 슬롯 위치(top 41.2%)에서 나옴 — width/left는 inline style로 설정 */
 .printCard {
   position: absolute;
   top: 41.2%;
-  left: 22.5%;
-  width: 54.8%;
   border-radius: 3px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   cursor: pointer;
@@ -276,7 +273,7 @@
 
 .printHint {
   margin-top: 16px;
-  color: #fff;
+  color: #555;
   font-size: 13px;
   opacity: 0.8;
   letter-spacing: 0.3px;

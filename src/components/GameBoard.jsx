@@ -40,7 +40,8 @@ export function GameBoard() {
 
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [printData, setPrintData] = useState(null)   // 프린트 오버레이용 dataUrl
+  const [printData, setPrintData] = useState(null)
+  const [stageVisualWidth, setStageVisualWidth] = useState(null)
   const [placedProps, setPlacedProps] = useState([])  // 최대 2개
   const [stageDrag, setStageDrag] = useState(null)
   const [propDrag, setPropDrag] = useState(null)      // { propId, offsetX, offsetY }
@@ -118,6 +119,8 @@ export function GameBoard() {
     if (!stageRef.current || saving) return
     setSaving(true)
     try {
+      const visualW = stageRef.current.getBoundingClientRect().width
+      setStageVisualWidth(visualW)
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
       setPrintData(dataUrl)
     } finally {
@@ -276,22 +279,27 @@ export function GameBoard() {
       </div>
 
       {/* 프린트 애니메이션 오버레이 */}
-      {printData && (
-        <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
-          <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.printerWrap}>
-              <img src="/printer.png" alt="프린터" className={styles.printerImg} />
-              <img
-                src={printData}
-                alt="포토카드"
-                className={styles.printCard}
-                onClick={onPrintDownload}
-              />
+      {printData && (() => {
+        const cardW = stageVisualWidth ?? 160
+        const printerW = Math.round(cardW / 0.548)
+        return (
+          <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
+            <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.printerWrap} style={{ width: printerW }}>
+                <img src="/printer.png" alt="프린터" className={styles.printerImg} />
+                <img
+                  src={printData}
+                  alt="포토카드"
+                  className={styles.printCard}
+                  style={{ width: cardW, left: '22.5%' }}
+                  onClick={onPrintDownload}
+                />
+              </div>
+              <p className={styles.printHint}>탭해서 저장</p>
             </div>
-            <p className={styles.printHint}>탭해서 저장</p>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </div>
   )
 }
