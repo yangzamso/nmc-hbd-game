@@ -12,7 +12,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   const sh = captured.height
 
   const padH   = Math.round(sw * 0.06)
-  const padTop  = Math.round(sw * 0.06)
+  const padTop  = Math.round(sw * 0.20)   // padBot과 같게 → 캐릭터 수직 중앙
   const padBot  = Math.round(sw * 0.22)
   const cardW   = sw + padH * 2
   const cardH   = sh + padTop + padBot

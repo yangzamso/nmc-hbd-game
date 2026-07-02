@@ -282,22 +282,28 @@ export function GameBoard() {
       {printData && (() => {
         const rawPrinterW = Math.round((stageVisualWidth ?? 160) / 0.548)
         const printerW = Math.min(rawPrinterW, window.innerWidth - 24)
+        const printerH = Math.round(printerW * 408 / 612)
         const cardW = Math.round(printerW * 0.548)
+        // 프린터 하단이 카드 상단을 덮는 겹침량
+        const overlapAmount = Math.round(printerH * 0.18)
         return (
           <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
             <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
-              <div className={styles.printerWrap} style={{ width: printerW }}>
+              {/* 프린터 — z-index 높아서 카드 상단을 덮음 */}
+              <div style={{ position: 'relative', zIndex: 3, width: printerW, flexShrink: 0 }}>
                 <img src="/printer.png" alt="프린터" className={styles.printerImg} />
+              </div>
+              {/* 카드 — 음수 margin으로 프린터와 겹치게, z-index 낮아서 프린터 아래 */}
+              <div style={{ position: 'relative', zIndex: 1, width: cardW, marginTop: -overlapAmount, flexShrink: 0 }}>
                 <img
                   src={printData}
                   alt="포토카드"
                   className={styles.printCard}
-                  style={{ width: cardW, left: '22.5%' }}
                   onClick={onPrintDownload}
                 />
               </div>
-              <p className={styles.printHint}>탭해서 저장</p>
             </div>
+            <p className={styles.printHint}>탭해서 저장</p>
           </div>
         )
       })()}
