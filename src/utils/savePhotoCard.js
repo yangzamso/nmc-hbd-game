@@ -41,6 +41,13 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     ctx.fillRect(padH, padTop, sw, sh)
   }
 
+  // 캐릭터 1.2배 확대 + 중앙 정렬 (DOM 변경 없이 캔버스에서만 처리)
+  const CHAR_SCALE = 1.2
+  const scaledW = Math.round(sw * CHAR_SCALE)
+  const scaledH = Math.round(sh * CHAR_SCALE)
+  const drawX = padH - Math.round((scaledW - sw) / 2)
+  const drawY = padTop - Math.round((scaledH - sh) / 2)
+
   // 아웃그로우 — 흰색 shadow 여러 단계로 캐릭터 윤곽 따라 발광
   const glowLayers = [
     { blur: 3,  alpha: 1.0 },
@@ -52,13 +59,13 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   for (const { blur, alpha } of glowLayers) {
     ctx.shadowColor = `rgba(255,255,255,${alpha})`
     ctx.shadowBlur  = blur
-    ctx.drawImage(captured, padH, padTop, sw, sh)
+    ctx.drawImage(captured, drawX, drawY, scaledW, scaledH)
   }
   ctx.shadowColor = 'transparent'
   ctx.shadowBlur  = 0
 
   // 캐릭터/의상 최종 선명하게 합성
-  ctx.drawImage(captured, padH, padTop, sw, sh)
+  ctx.drawImage(captured, drawX, drawY, scaledW, scaledH)
 
   const centerX = cardW / 2
   const textY   = sh + padTop + padBot * 0.45

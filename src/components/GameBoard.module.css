@@ -45,10 +45,6 @@
     drop-shadow(0 0 60px rgba(255,255,255,0.3));
 }
 
-/* 캡처 시 전체 콘텐츠 1.2배 확대 */
-.stage[data-capturing="true"] .stageContent {
-  transform: scale(1.2);
-}
 
 .removeBtn {
   position: fixed;

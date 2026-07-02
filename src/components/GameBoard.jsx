@@ -1,5 +1,4 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { flushSync } from 'react-dom'
 import { COSTUMES, PROPS, BACKGROUNDS, CHARACTER_CROP, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
 import { useGameStore } from '../store/gameStore'
 import { capturePhotoCard, downloadPhotoCard } from '../utils/savePhotoCard'
@@ -46,7 +45,6 @@ export function GameBoard() {
   const [placedProps, setPlacedProps] = useState([])  // 최대 2개
   const [stageDrag, setStageDrag] = useState(null)
   const [propDrag, setPropDrag] = useState(null)      // { propId, offsetX, offsetY }
-  const [captureCenter, setCaptureCenter] = useState(null) // 캡처 시 중앙 위치 오버라이드
 
   const getStageRect = () => stageRef.current?.getBoundingClientRect()
 
@@ -119,25 +117,14 @@ export function GameBoard() {
 
   const onSave = useCallback(async () => {
     if (!stageRef.current || saving) return
-    const stageRect = stageRef.current.getBoundingClientRect()
-    const cx = stageRect.width / 2
-    const cy = stageRect.height / 2
-    // 의상/소품을 중앙으로 이동 + 1.2배 스케일 동기 적용
-    flushSync(() => {
-      setSaving(true)
-      setStageVisualWidth(stageRect.width)
-      setCaptureCenter({ x: cx, y: cy })
-    })
-    stageRef.current.dataset.capturing = 'true'
+    setSaving(true)
     try {
+      const visualW = stageRef.current.getBoundingClientRect().width
+      setStageVisualWidth(visualW)
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
       setPrintData(dataUrl)
     } finally {
-      delete stageRef.current.dataset.capturing
-      flushSync(() => {
-        setCaptureCenter(null)
-        setSaving(false)
-      })
+      setSaving(false)
     }
   }, [bgColor, bgImage, saving])
 
@@ -179,8 +166,8 @@ export function GameBoard() {
                 onPointerDown={onPlacedPointerDown}
                 style={{
                   position: 'absolute',
-                  left: captureCenter ? captureCenter.x : placed.x,
-                  top: captureCenter ? captureCenter.y : placed.y,
+                  left: placed.x,
+                  top: placed.y,
                   transform: 'translate(-50%,-50%)',
                   width: w, height: h, objectFit: 'fill',
                   cursor: stageDrag ? 'grabbing' : 'grab',
@@ -199,8 +186,8 @@ export function GameBoard() {
                 onPointerDown={(e) => onPropPointerDown(e, pp.propId)}
                 style={{
                   position: 'absolute',
-                  left: captureCenter ? captureCenter.x : pp.x,
-                  top: captureCenter ? captureCenter.y : pp.y,
+                  left: pp.x,
+                  top: pp.y,
                   transform: `translate(-50%,-50%) rotate(${prop.rotate ?? 0}deg)`,
                   width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR * (prop.propScale ?? 1)),
                   objectFit: 'contain',
