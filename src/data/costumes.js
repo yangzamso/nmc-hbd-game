@@ -23,12 +23,13 @@ export const BACKGROUNDS = [
   { id: 'bg_sky_check',  label: '하늘',   image: '/bg-sky-check.jpg' },
   { id: 'bg_yellow',     label: '노랑',   image: '/bg-yellow.jpg' },
   { id: 'bg_pastel',     label: '파스텔', image: '/bg-pastel.jpg' },
+  { id: 'bg_mint',       label: '민트',   image: '/bg-mint.jpg' },
 ]
 
-export const CHAR_DISPLAY_W = 162
+export const SCALE = 0.6
 const charNatW = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const charNatH = CHARACTER_CROP.y2 - CHARACTER_CROP.y1
-export const SCALE = CHAR_DISPLAY_W / charNatW
+export const CHAR_DISPLAY_W = Math.round(charNatW * SCALE)
 export const CHAR_DISPLAY_H = Math.round(charNatH * SCALE)
 
 // 의상/아이템 크기 보정 — 캐릭터 대비 의상이 크면 낮추고 작으면 높임

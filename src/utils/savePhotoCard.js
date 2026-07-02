@@ -43,8 +43,9 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   canvas.height = cardH
   const ctx = canvas.getContext('2d')
 
-  // 카드 전체 흰 배경
-  ctx.fillStyle = '#ffffff'
+  // 카드 전체 배경 — "기본"(흰색) 배경 선택 시에만 사진 영역과 구분되도록 라이트 그레이 사용
+  const isDefaultWhiteBg = !bgImage && bgColor === '#ffffff'
+  ctx.fillStyle = isDefaultWhiteBg ? '#eeeeec' : '#ffffff'
   ctx.fillRect(0, 0, cardW, cardH)
 
   // 스테이지 영역에 배경 적용
@@ -101,10 +102,10 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   // 캐릭터/의상 최종 선명하게 합성
   ctx.drawImage(captured, srcX, srcY, srcW, srcH, drawX, drawY, scaledW, scaledH)
 
-  // 사진 영역 연한 테두리 — 흰 배경과 자연스럽게 구분
-  ctx.strokeStyle = 'rgba(0,0,0,0.10)'
+  // 사진 영역 연한 회색 테두리 — 흰/색 배경 모두와 자연스럽게 구분
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)'
   ctx.lineWidth   = 1
-  ctx.strokeRect(padH + 1, padTop + 1, sw - 2, sh - 2)
+  ctx.strokeRect(padH + 0.5, padTop + 0.5, sw - 1, sh - 1)
 
   const centerX = cardW / 2
   const textY   = sh + padTop + padBot * 0.45
