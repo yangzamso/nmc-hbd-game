@@ -1,5 +1,25 @@
 import html2canvas from 'html2canvas'
 
+// 캡처된 캔버스에서 불투명 픽셀의 bounding box 계산
+function getNonTransparentBounds(canvas) {
+  const ctx = canvas.getContext('2d')
+  const { width, height } = canvas
+  const data = ctx.getImageData(0, 0, width, height).data
+  let minX = width, minY = height, maxX = 0, maxY = 0
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] > 10) {
+        if (x < minX) minX = x
+        if (x > maxX) maxX = x
+        if (y < minY) minY = y
+        if (y > maxY) maxY = y
+      }
+    }
+  }
+  if (minX > maxX || minY > maxY) return null
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 }
+}
+
 export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = null) {
   // 스테이지는 transparent이므로 캐릭터/의상만 캡처
   const captured = await html2canvas(stageEl, {
@@ -41,12 +61,26 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     ctx.fillRect(padH, padTop, sw, sh)
   }
 
-  // 캐릭터 1.2배 확대 + 중앙 정렬 (DOM 변경 없이 캔버스에서만 처리)
+  // 캐릭터 실제 픽셀 bounding box 계산 → 의상 포함 실제 높이/너비 기준으로 중앙 배치
+  const bounds = getNonTransparentBounds(captured)
   const CHAR_SCALE = 1.2
-  const scaledW = Math.round(sw * CHAR_SCALE)
-  const scaledH = Math.round(sh * CHAR_SCALE)
-  const drawX = padH - Math.round((scaledW - sw) / 2)
-  const drawY = padTop - Math.round((scaledH - sh) / 2)
+
+  let drawX, drawY, scaledW, scaledH, srcX, srcY, srcW, srcH
+  if (bounds) {
+    srcX = bounds.x; srcY = bounds.y; srcW = bounds.w; srcH = bounds.h
+    scaledW = Math.round(srcW * CHAR_SCALE)
+    scaledH = Math.round(srcH * CHAR_SCALE)
+    // 카드 스테이지 영역 중앙에 배치
+    drawX = padH + Math.round((sw - scaledW) / 2)
+    drawY = padTop + Math.round((sh - scaledH) / 2)
+  } else {
+    // 캐릭터 없을 때 fallback
+    srcX = 0; srcY = 0; srcW = sw; srcH = sh
+    scaledW = Math.round(sw * CHAR_SCALE)
+    scaledH = Math.round(sh * CHAR_SCALE)
+    drawX = padH - Math.round((scaledW - sw) / 2)
+    drawY = padTop - Math.round((scaledH - sh) / 2)
+  }
 
   // 아웃그로우 — 흰색 shadow 여러 단계로 캐릭터 윤곽 따라 발광
   const glowLayers = [
@@ -59,13 +93,13 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   for (const { blur, alpha } of glowLayers) {
     ctx.shadowColor = `rgba(255,255,255,${alpha})`
     ctx.shadowBlur  = blur
-    ctx.drawImage(captured, drawX, drawY, scaledW, scaledH)
+    ctx.drawImage(captured, srcX, srcY, srcW, srcH, drawX, drawY, scaledW, scaledH)
   }
   ctx.shadowColor = 'transparent'
   ctx.shadowBlur  = 0
 
   // 캐릭터/의상 최종 선명하게 합성
-  ctx.drawImage(captured, drawX, drawY, scaledW, scaledH)
+  ctx.drawImage(captured, srcX, srcY, srcW, srcH, drawX, drawY, scaledW, scaledH)
 
   const centerX = cardW / 2
   const textY   = sh + padTop + padBot * 0.45
