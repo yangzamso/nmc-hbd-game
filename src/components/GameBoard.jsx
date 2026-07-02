@@ -145,7 +145,7 @@ export function GameBoard() {
         <div
           ref={stageRef}
           className={styles.stage}
-        style={{ background: '#ffffff' }}
+        style={{ background: '#fafafa' }}
         onPointerMove={onStagePointerMove}
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}
