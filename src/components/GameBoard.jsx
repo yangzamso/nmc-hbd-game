@@ -33,14 +33,19 @@ function farCorner(stageR) {
   return { x: pick.x + (Math.random() - 0.5) * 30, y: pick.y + (Math.random() - 0.5) * 30 }
 }
 
+// 원본 앞부분 무음(~1.45s)의 절반 지점부터 재생해 무음 체감 시간을 절반으로 줄임
+const PRINT_SOUND_START = 0.725
+
 export function GameBoard() {
   const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage, reset } = useGameStore()
   const stageRef = useRef(null)
+  const boardRef = useRef(null)
   const { w: charW, h: charH, scale: charScale } = useCharSize()
 
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
   const [printData, setPrintData] = useState(null)
+  const [replayKey, setReplayKey] = useState(0)
   const [stageVisualWidth, setStageVisualWidth] = useState(null)
   const [placedProps, setPlacedProps] = useState([])  // 최대 2개
   const [stageDrag, setStageDrag] = useState(null)
@@ -115,6 +120,16 @@ export function GameBoard() {
 
   const placedCostume = placed ? COSTUMES.find((c) => c.id === placed.costumeId) : null
 
+  const playPrinterSound = useCallback(() => {
+    const audio = new Audio('/printer-audio.mp3')
+    const start = () => {
+      audio.currentTime = PRINT_SOUND_START
+      audio.play().catch(() => {})
+    }
+    if (audio.readyState >= 1) start()
+    else audio.addEventListener('loadedmetadata', start, { once: true })
+  }, [])
+
   const onSave = useCallback(async () => {
     if (!stageRef.current || saving) return
     setSaving(true)
@@ -123,11 +138,18 @@ export function GameBoard() {
       setStageVisualWidth(visualW)
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
       setPrintData(dataUrl)
-      new Audio('/printer-audio.mp3').play().catch(() => {})
+      setReplayKey(0)
+      playPrinterSound()
     } finally {
       setSaving(false)
     }
-  }, [bgColor, bgImage, saving])
+  }, [bgColor, bgImage, saving, playPrinterSound])
+
+  const onReplay = useCallback((e) => {
+    e.stopPropagation()
+    setReplayKey((k) => k + 1)
+    playPrinterSound()
+  }, [playPrinterSound])
 
   const onPrintDownload = useCallback(() => {
     if (printData) downloadPhotoCard(printData)
@@ -135,7 +157,7 @@ export function GameBoard() {
   }, [printData])
 
   return (
-    <div className={styles.board}
+    <div ref={boardRef} className={styles.board}
       style={bgImage
         ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: bgColor ?? '#2a2a2a' }
@@ -287,7 +309,7 @@ export function GameBoard() {
         const SLOT_Y_RATIO = 95 / 302
         // 카드: 스테이지 너비 고정 / 프린터: 카드 대비 독립적으로 크게
         const cardW    = Math.round((stageVisualWidth ?? 160) * 0.55)
-        const printerW = window.innerWidth
+        const printerW = boardRef.current?.getBoundingClientRect().width ?? window.innerWidth
         const printerH = Math.round(printerW * 302 / 265)
         const cardH    = Math.round(cardW * 4 / 3)
         const slotY    = Math.round(printerH * SLOT_Y_RATIO)
@@ -313,7 +335,7 @@ export function GameBoard() {
                 left: '50%', transform: 'translateX(-50%)',
                 width: cardW, zIndex: 2,
               }}>
-                <img src={printData} alt="포토카드"
+                <img key={replayKey} src={printData} alt="포토카드"
                   className={styles.printCard} onClick={onPrintDownload} />
               </div>
 
@@ -321,6 +343,12 @@ export function GameBoard() {
               <img src="/printer-top.png" alt=""
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 4, display: 'block' }} />
             </div>
+            <button type="button" className={styles.replayBtn} onClick={onReplay} aria-label="애니메이션 다시 재생">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 1 3 6.7" />
+                <path d="M3 16v-4h4" />
+              </svg>
+            </button>
             <p className={styles.printHint}>탭해서 저장</p>
           </div>
         )

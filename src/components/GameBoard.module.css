@@ -220,7 +220,12 @@
 /* 배경: 짙은 다크그레이 — 프린터/카드 강조 */
 .printOverlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  max-width: var(--app-max-width, 480px);
+  transform: translateX(-50%);
   overflow: hidden;
   background: #302d2b;
   display: flex;
@@ -285,7 +290,33 @@
     0 8px 20px rgba(0,0,0,0.45),
     0 20px 48px rgba(0,0,0,0.35);
   cursor: pointer;
-  animation: printOut 3s ease-out both;
+  /* 효과음이 0.725s 지점부터 재생되므로(원본 앞부분 무음 절반 스킵),
+     모터 소리가 배경 노이즈 수준까지 잦아드는 지점(재생 기준 3.175s)보다 0.2s 일찍 마무리 */
+  animation: printOut 2.975s cubic-bezier(0.16, 1, 0.3, 1) 0.725s both;
+}
+
+/* 애니메이션 다시 재생 버튼 */
+.replayBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s, transform 0.1s;
+}
+.replayBtn:active {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(0.92);
 }
 
 /* overlay 하단 고정 — 카드와 겹치지 않음 */

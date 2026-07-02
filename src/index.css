@@ -6,6 +6,7 @@ html, body {
 }
 
 :root {
+  --app-max-width: 480px;
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -59,10 +60,11 @@ html, body {
 
 body {
   margin: 0;
+  background: #1c1c1c;
 }
 
 #root {
-  width: 1126px;
+  width: var(--app-max-width);
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
