@@ -285,9 +285,9 @@ export function GameBoard() {
         const SLOT_W_RATIO = 200 / 265
         const SLOT_Y_RATIO = 95 / 302
         const stageW   = stageVisualWidth ?? 160
-        const printerW = Math.min(Math.round(stageW / SLOT_W_RATIO * 1.3), window.innerWidth - 24)
+        const printerW = Math.min(Math.round(stageW / SLOT_W_RATIO * 1.5), window.innerWidth - 24)
         const printerH = Math.round(printerW * 302 / 265)
-        const cardW    = Math.round(printerW * SLOT_W_RATIO)
+        const cardW    = Math.round(printerW * SLOT_W_RATIO * 0.9)
         const cardH    = Math.round(cardW * 4 / 3)
         const slotY    = Math.round(printerH * SLOT_Y_RATIO)
         // 씬 전체 높이 = 슬롯 위치 + 카드 높이
