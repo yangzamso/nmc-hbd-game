@@ -67,7 +67,7 @@
 .panel {
   height: 40dvh;
   flex-shrink: 0;
-  background: #f5f5f5;
+  background: #302d2b;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -80,7 +80,7 @@
 .sectionTitle {
   font-size: 13px;
   font-weight: 700;
-  color: #555;
+  color: #ccc;
   margin-bottom: 8px;
 }
 
