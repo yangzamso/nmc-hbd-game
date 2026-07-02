@@ -31,6 +31,10 @@
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
+  filter:
+    drop-shadow(0 0 4px rgba(255,255,255,1))
+    drop-shadow(0 0 10px rgba(255,255,255,0.8))
+    drop-shadow(0 0 20px rgba(255,255,255,0.5));
 }
 
 .removeBtn {
