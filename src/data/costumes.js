@@ -18,9 +18,10 @@ export const PROPS = [
 ]
 
 export const BACKGROUNDS = [
-  { id: 'bg_pink_star',  label: '핑크별',  image: '/bg-pink-star.jpg' },
-  { id: 'bg_sky_check',  label: '하늘체크',image: '/bg-sky-check.jpg' },
-  { id: 'bg_yellow',     label: '노랑',    image: '/bg-yellow.jpg' },
+  { id: 'bg_pink_star',  label: '핑크',   image: '/bg-pink-star.jpg' },
+  { id: 'bg_sky_check',  label: '하늘',   image: '/bg-sky-check.jpg' },
+  { id: 'bg_yellow',     label: '노랑',   image: '/bg-yellow.jpg' },
+  { id: 'bg_pastel',     label: '파스텔', image: '/bg-pastel.jpg' },
 ]
 
 export const CHAR_DISPLAY_W = 162
