@@ -123,6 +123,7 @@ export function GameBoard() {
       setStageVisualWidth(visualW)
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
       setPrintData(dataUrl)
+      new Audio('/printer-audio.mp3').play().catch(() => {})
     } finally {
       setSaving(false)
     }
