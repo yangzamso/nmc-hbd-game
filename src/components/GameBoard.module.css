@@ -7,13 +7,13 @@
   background-position: center;
 }
 
-/* 포토카드 스테이지 — 5.5×8.5cm 비율, 가로 260px 고정 */
+/* 포토카드 스테이지 — 5.5×8.5cm 비율, 패널 위 빈 공간을 채움 */
 .stage {
   flex-shrink: 0;
   width: 100%;
   aspect-ratio: 55 / 85;
-  max-width: 260px;
-  max-height: 57dvh;
+  max-height: 60dvh;
+  max-width: calc(60dvh * 55 / 85);
   margin: 0 auto 8px;
   position: relative;
   display: flex;
@@ -34,8 +34,10 @@
 }
 
 .removeBtn {
-  display: block;
-  margin: -30px auto 0;
+  position: fixed;
+  bottom: calc(40dvh + 40px);
+  left: 50%;
+  transform: translateX(-50%);
   padding: 7px 22px;
   border: none;
   border-radius: 20px;
@@ -45,6 +47,7 @@
   cursor: pointer;
   touch-action: manipulation;
   white-space: nowrap;
+  z-index: 100;
 }
 
 /* 패널 — 고정 40dvh + 세로 스크롤 */
@@ -189,8 +192,7 @@
 
 @media (min-width: 600px) {
   .stage {
-    max-width: 260px;
-    max-height: 62dvh;
+    max-height: 60dvh;
     margin-bottom: 0;
   }
 }
