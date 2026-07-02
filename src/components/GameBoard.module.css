@@ -10,13 +10,16 @@
 /* 스테이지 외곽 — canvase.png 배경 */
 .bg {
   flex-shrink: 0;
-  width: 130%;
+  width: 100%;
   aspect-ratio: 1123 / 1401;
-  max-height: 74dvh;
-  margin: 0 -15%;
+  max-height: 57dvh;
+  margin: 0 auto;
+  margin-bottom: 18dvh;
   position: relative;
   background: url('/canvase.png') center / contain no-repeat;
   touch-action: none;
+  transform: scale(1.3);
+  transform-origin: top center;
 }
 
 /* 실제 캔버스 — 카드 구멍 위치에 절대좌표 배치 */
@@ -210,9 +213,11 @@
 
 @media (min-width: 600px) {
   .bg {
-    width: 100%;
+    transform: none;
+    max-height: 62dvh;
     margin: 0 auto;
-    max-width: calc(74dvh * 1123 / 1401);
+    margin-bottom: 0;
+    max-width: calc(62dvh * 1123 / 1401);
   }
 }
 
