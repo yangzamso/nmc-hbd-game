@@ -286,7 +286,7 @@ export function GameBoard() {
         const SLOT_Y_RATIO = 95 / 302
         // 카드: 스테이지 너비 고정 / 프린터: 카드 대비 독립적으로 크게
         const cardW    = stageVisualWidth ?? 160
-        const printerW = Math.round(cardW / SLOT_W_RATIO * 1.3)
+        const printerW = Math.round(cardW / SLOT_W_RATIO * 1.1)
         const printerH = Math.round(printerW * 302 / 265)
         const cardH    = Math.round(cardW * 4 / 3)
         const slotY    = Math.round(printerH * SLOT_Y_RATIO)
