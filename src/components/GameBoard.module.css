@@ -231,6 +231,25 @@
   padding-top: 88px;
 }
 
+/* 프린터 상단 커버 — 오버레이 배경색 + 동일 그레인 */
+.printCover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background: #302d2b;
+}
+.printCover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  pointer-events: none;
+}
+
 /* 빈티지 필름 노이즈 */
 .printOverlay::before {
   content: '';

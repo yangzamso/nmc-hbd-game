@@ -303,11 +303,8 @@ export function GameBoard() {
               <img src="/printer.png" alt=""
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1, display: 'block' }} />
 
-              {/* Layer 3: 커버 배경 — 슬롯 위 영역을 가려 카드가 프린터 안에 있는 느낌 */}
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0,
-                height: slotY, background: 'transparent', zIndex: 3,
-              }} />
+              {/* Layer 3: 커버 배경 — 슬롯 위 영역을 오버레이 배경색+그레인으로 가림 */}
+              <div className={styles.printCover} style={{ height: slotY }} />
 
               {/* 포토카드 — 슬롯(slotY)에서 나옴, z=2 */}
               <div style={{
