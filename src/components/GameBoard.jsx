@@ -134,16 +134,17 @@ export function GameBoard() {
   }, [printData])
 
   return (
-    <div className={styles.board}>
+    <div className={styles.board}
+      style={bgImage
+        ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+        : { background: bgColor ?? '#2a2a2a' }
+      }
+    >
 
-      {/* 스테이지 (5.5×8.5cm 포토카드 비율) */}
+      {/* 스테이지 (5.5×8.5cm 포토카드 비율) — 배경 투명 */}
       <div
         ref={stageRef}
         className={styles.stage}
-        style={bgImage
-          ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-          : { background: bgColor ?? '#2a2a2a' }
-        }
         onPointerMove={onStagePointerMove}
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}
