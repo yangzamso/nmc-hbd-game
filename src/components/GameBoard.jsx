@@ -136,19 +136,14 @@ export function GameBoard() {
   return (
     <div className={styles.board}>
 
-      {/* 스테이지 영역 */}
-      <div className={styles.bg}
+      {/* 스테이지 (5.5×8.5cm 포토카드 비율) */}
+      <div
+        ref={stageRef}
+        className={styles.stage}
         style={bgImage
           ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-          : bgColor
-            ? { background: bgColor }
-            : undefined
+          : { background: bgColor ?? '#2a2a2a' }
         }
-      >
-        <div
-          ref={stageRef}
-          className={styles.stage}
-        style={{ background: '#fafafa' }}
         onPointerMove={onStagePointerMove}
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}
@@ -195,9 +190,6 @@ export function GameBoard() {
             />
           )
         })}
-
-        </div>
-        <img src="/canvase-overlay.png" className={styles.frame} alt="" />
       </div>
 
       {/* 초기화 버튼 */}
