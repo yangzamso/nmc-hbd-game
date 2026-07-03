@@ -140,7 +140,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     img.src = '/logo-1.png'
   })
   const logoMargin = Math.round(sw * 0.04)
-  const logoW = logo ? Math.round(sw * 0.22) : 0
+  const logoW = logo ? Math.round(sw * 0.27) : 0
   const logoH = logo ? Math.round(logoW * logo.naturalHeight / logo.naturalWidth) : 0
   const charOffsetY = logo ? logoH : 0
 
