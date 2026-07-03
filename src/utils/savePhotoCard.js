@@ -1,5 +1,32 @@
 import html2canvas from 'html2canvas'
 
+// 밝기(0~255) — 배경이 밝을수록(파스텔 등) 흰색 아웃그로우의 대비가 약해지므로 보정에 사용
+function luminance(r, g, b) {
+  return (r * 299 + g * 587 + b * 114) / 1000
+}
+
+function hexToRgb(hex) {
+  const h = hex.replace('#', '')
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]
+}
+
+// 이미지를 16x16으로 축소해 평균 밝기 계산
+function imageBrightness(img) {
+  const c = document.createElement('canvas')
+  c.width = 16
+  c.height = 16
+  const ctx = c.getContext('2d')
+  ctx.drawImage(img, 0, 0, 16, 16)
+  const data = ctx.getImageData(0, 0, 16, 16).data
+  let total = 0
+  let count = 0
+  for (let i = 0; i < data.length; i += 4) {
+    total += luminance(data[i], data[i + 1], data[i + 2])
+    count++
+  }
+  return total / count
+}
+
 // 캡처된 캔버스에서 불투명 픽셀의 bounding box 계산
 function getNonTransparentBounds(canvas) {
   const ctx = canvas.getContext('2d')
@@ -21,13 +48,37 @@ function getNonTransparentBounds(canvas) {
 }
 
 export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = null) {
-  // 스테이지는 transparent이므로 캐릭터/의상만 캡처
-  const captured = await html2canvas(stageEl, {
-    backgroundColor: null,
-    useCORS: true,
-    scale: 2,
-    logging: false,
-  })
+  // 라이브 미리보기용 배경(색/이미지)이 .board(스테이지의 부모)에 인라인 스타일로 걸려있어서,
+  // html2canvas로 스테이지를 그대로 캡처하면 배경까지 같이 찍혀 캐릭터 바운딩박스가 캔버스
+  // 전체로 오염되는 문제가 있었음. 캡처 직전 스테이지 자신과 부모의 배경을 잠깐 지웠다가
+  // 즉시 복원해서 캐릭터/의상만 순수하게 캡처
+  const elsToClear = [stageEl, stageEl.parentElement].filter(Boolean)
+  const prevStyles = elsToClear.map((el) => ({
+    background: el.style.background,
+    backgroundImage: el.style.backgroundImage,
+    backgroundColor: el.style.backgroundColor,
+  }))
+  for (const el of elsToClear) {
+    el.style.background = 'none'
+    el.style.backgroundImage = 'none'
+    el.style.backgroundColor = 'transparent'
+  }
+
+  let captured
+  try {
+    captured = await html2canvas(stageEl, {
+      backgroundColor: null,
+      useCORS: true,
+      scale: 2,
+      logging: false,
+    })
+  } finally {
+    elsToClear.forEach((el, i) => {
+      el.style.background = prevStyles[i].background
+      el.style.backgroundImage = prevStyles[i].backgroundImage
+      el.style.backgroundColor = prevStyles[i].backgroundColor
+    })
+  }
 
   const sw = captured.width
   const sh = captured.height
@@ -48,18 +99,33 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   ctx.fillStyle = isDefaultWhiteBg ? '#eeeeec' : '#ffffff'
   ctx.fillRect(0, 0, cardW, cardH)
 
-  // 스테이지 영역에 배경 적용
+  // 스테이지 영역에 배경 적용 — 너비에 비율을 맞추고, 세로는 넘치는 만큼 잘라 가운데 정렬(cover 방식)
+  // bgBrightness는 아래 아웃그로우 강도를 배경 밝기에 맞춰 보정하는 데 사용
+  let bgBrightness = 255
   if (bgImage) {
     await new Promise((resolve) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
-      img.onload = () => { ctx.drawImage(img, padH, padTop, sw, sh); resolve() }
+      img.onload = () => {
+        const scale = sw / img.naturalWidth
+        const scaledH = img.naturalHeight * scale
+        const drawY = padTop + (sh - scaledH) / 2
+        ctx.save()
+        ctx.beginPath()
+        ctx.rect(padH, padTop, sw, sh)
+        ctx.clip()
+        ctx.drawImage(img, padH, drawY, sw, scaledH)
+        ctx.restore()
+        bgBrightness = imageBrightness(img)
+        resolve()
+      }
       img.onerror = resolve
       img.src = bgImage
     })
   } else if (bgColor) {
     ctx.fillStyle = bgColor
     ctx.fillRect(padH, padTop, sw, sh)
+    bgBrightness = luminance(...hexToRgb(bgColor))
   }
 
   // 캐릭터 실제 픽셀 bounding box 계산 → 의상 포함 실제 높이/너비 기준으로 중앙 배치
@@ -85,12 +151,20 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   }
 
   // 아웃그로우 — 흰색 shadow 여러 단계로 캐릭터 윤곽 따라 발광
+  // 배경이 밝을수록(파스텔 등) 흰 글로우와의 대비가 약해지므로, 밝기에 비례해 번짐 범위/농도를 보정.
+  // alpha는 레이어당 1.0이 최대라 그것만으론 더 진해지지 않으므로, 가까운 레이어를 여러 번 겹쳐
+  // 그려서(합성 누적) 테두리 바로 옆이 실제로 더 뽀얗게 채워지도록 함
+  const glowBoost = bgBrightness > 235 ? 1.6
+    : bgBrightness > 200 ? 1.35
+    : bgBrightness > 160 ? 1.1
+    : 1.0
+  const closeRepeat = glowBoost > 1.3 ? 3 : glowBoost > 1.05 ? 2 : 1
   const glowLayers = [
-    { blur: 3,  alpha: 1.0 },
-    { blur: 10, alpha: 1.0 },
-    { blur: 22, alpha: 0.8 },
-    { blur: 40, alpha: 0.5 },
-    { blur: 60, alpha: 0.3 },
+    ...Array(closeRepeat).fill({ blur: 3,  alpha: 1.0 }),
+    ...Array(closeRepeat).fill({ blur: 10, alpha: 1.0 }),
+    { blur: 22 * glowBoost, alpha: Math.min(1, 0.8 * glowBoost) },
+    { blur: 40 * glowBoost, alpha: Math.min(1, 0.5 * glowBoost) },
+    { blur: 60 * glowBoost, alpha: Math.min(1, 0.3 * glowBoost) },
   ]
   for (const { blur, alpha } of glowLayers) {
     ctx.shadowColor = `rgba(255,255,255,${alpha})`
@@ -118,7 +192,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   // 캔버스는 @font-face 로드를 자동으로 기다리지 않으므로 그리기 전에 명시적으로 로드
   await document.fonts.load(`${captionFontSize}px OngleipEoyeonce`).catch(() => {})
   ctx.font = `${captionFontSize}px OngleipEoyeonce, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif`
-  ctx.fillText('2026 닛몰캐쉬 생일축하해!', centerX, textY)
+  ctx.fillText('닛몰캐쉬 30살 생일 축하해!', centerX, textY)
 
   return canvas.toDataURL('image/png')
 }

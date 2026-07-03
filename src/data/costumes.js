@@ -9,26 +9,31 @@ export const COSTUMES = [
   { id: 'wolf',       name: '하얀늑대',      image: '/items/wolf.png',       crop: { x1: 1144, y1: 936, x2: 1475, y2: 1372 } },
 ]
 
+// propScale = SCALE × (아이템 파일 전체 너비 / 80) — nmc.png 원본 대비 캐릭터와 동일한 비율로 보정 (2026-07-03 실측)
 export const PROPS = [
-  { id: 'item_sword',      name: '장난감검',  image: '/items/item_sword.png' },
-  { id: 'item_rose',       name: '장미',      image: '/items/item_rose.png',       propScale: 1.5 },
-  { id: 'item_hat',        name: '모자',      image: '/items/item_hat.png',        propScale: 1.8 },
-  { id: 'item_chupachups', name: '츄팝츕스',  image: '/items/item_chupachups.png' },
-  { id: 'item_magnifier',  name: '돋보기',    image: '/items/item_magnifier.png', rotate: -10 },
+  { id: 'item_sword',      name: '장난감검',  image: '/items/item_sword.png',      propScale: 1.78, rotate: 10 },
+  { id: 'item_rose',       name: '장미',      image: '/items/item_rose.png',       propScale: 2.33 },
+  { id: 'item_hat',        name: '모자',      image: '/items/item_hat.png',        propScale: 3.33 },
+  { id: 'item_chupachups', name: '츄팝츕스',  image: '/items/item_chupachups.png', propScale: 1.34 },
+  { id: 'item_magnifier',  name: '돋보기',    image: '/items/item_magnifier.png', rotate: -10, propScale: 1.19 },
 ]
 
 export const BACKGROUNDS = [
-  { id: 'bg_white',      label: '기본',   color: '#ffffff' },
-  { id: 'bg_pink_star',  label: '핑크',   image: '/bg-pink-star.jpg' },
-  { id: 'bg_sky_check',  label: '하늘',   image: '/bg-sky-check.jpg' },
-  { id: 'bg_yellow',     label: '노랑',   image: '/bg-yellow.jpg' },
-  { id: 'bg_pastel',     label: '파스텔', image: '/bg-pastel.jpg' },
-  { id: 'bg_mint',       label: '민트',   image: '/bg-mint.jpg' },
+  { id: 'bg_white',    label: '기본',   color: '#ffffff' },
+  { id: 'bg_pink',     label: '핑크',   image: '/bg-pink.jpg' },
+  { id: 'bg_sky',      label: '하늘',   image: '/bg-sky.jpg' },
+  { id: 'bg_yellow',   label: '노랑',   image: '/bg-yellow.jpg' },
+  { id: 'bg_pastel',   label: '파스텔', image: '/bg-pastel.jpg' },
+  { id: 'bg_mint',     label: '민트',   image: '/bg-mint.jpg' },
+  { id: 'bg_lavender', label: '라벤더', image: '/bg-lavender.jpg' },
 ]
 
 export const SCALE = 0.5
 const charNatW = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const charNatH = CHARACTER_CROP.y2 - CHARACTER_CROP.y1
+// 고정 px 대신 스테이지 실측 폭 기준 비율로 캐릭터 크기를 계산 — 기기마다 dvh/svh 기반
+// 스테이지 크기가 달라도 캐릭터가 항상 같은 비율로 보이도록 함
+export const CHAR_WIDTH_RATIO = 0.4534
 export const CHAR_DISPLAY_W = Math.round(charNatW * SCALE)
 export const CHAR_DISPLAY_H = Math.round(charNatH * SCALE)
 

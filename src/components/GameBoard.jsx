@@ -1,12 +1,20 @@
-import { useRef, useState, useCallback } from 'react'
-import { COSTUMES, PROPS, BACKGROUNDS, CHARACTER_CROP, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
+import { useRef, useState, useCallback, useEffect } from 'react'
+import { COSTUMES, PROPS, BACKGROUNDS, CHARACTER_CROP, CHAR_DISPLAY_W, CHAR_DISPLAY_H, CHAR_WIDTH_RATIO, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
 import { useGameStore } from '../store/gameStore'
 import { capturePhotoCard } from '../utils/savePhotoCard'
 import { PrintOverlay } from './PrintOverlay'
 import styles from './GameBoard.module.css'
 
-function useCharSize() {
-  return { w: CHAR_DISPLAY_W, h: CHAR_DISPLAY_H, scale: SCALE }
+const charNatW = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
+const charNatH = CHARACTER_CROP.y2 - CHARACTER_CROP.y1
+
+// 스테이지 실측 폭 기준으로 캐릭터 크기를 계산 — 기기마다 스테이지 크기가 달라도 항상 같은 비율로 보이게 함
+// (stageWidth가 아직 측정되지 않은 첫 렌더에서는 고정값(CHAR_DISPLAY_W/H)으로 폴백)
+function useCharSize(stageWidth) {
+  if (!stageWidth) return { w: CHAR_DISPLAY_W, h: CHAR_DISPLAY_H, scale: CHAR_DISPLAY_W / charNatW }
+  const w = Math.round(stageWidth * CHAR_WIDTH_RATIO)
+  const h = Math.round(w * (charNatH / charNatW))
+  return { w, h, scale: w / charNatW }
 }
 
 // 스테이지 경계 내로 좌표 클램핑
@@ -38,7 +46,6 @@ export function GameBoard() {
   const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage, reset } = useGameStore()
   const stageRef = useRef(null)
   const boardRef = useRef(null)
-  const { w: charW, h: charH, scale: charScale } = useCharSize()
 
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -46,8 +53,22 @@ export function GameBoard() {
   const [placedProps, setPlacedProps] = useState([])  // 최대 2개
   const [stageDrag, setStageDrag] = useState(null)
   const [propDrag, setPropDrag] = useState(null)      // { propId, offsetX, offsetY }
+  const [stageWidth, setStageWidth] = useState(null)
+
+  const { w: charW, h: charH, scale: charScale } = useCharSize(stageWidth)
 
   const getStageRect = () => stageRef.current?.getBoundingClientRect()
+
+  // 스테이지 실측 폭 추적 — svh 기반이라 기기별로 값이 다르고, 리사이즈/방향전환 시에도 갱신
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el) return
+    const update = () => setStageWidth(el.getBoundingClientRect().width)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   // ── 의상 탭: 같은 거 누르면 해제, 다른 거 누르면 교체 ──
   const onCardClick = useCallback((costumeId) => {
@@ -130,12 +151,12 @@ export function GameBoard() {
   return (
     <div ref={boardRef} className={styles.board}
       style={bgImage
-        ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-        : { background: bgColor ?? '#2a2a2a' }
+        ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'top center', backgroundRepeat: 'no-repeat' }
+        : { backgroundColor: bgColor ?? '#ffffff' }
       }
     >
 
-      {/* 스테이지 (5.5×8.5cm 포토카드 비율) — 배경 투명 */}
+      {/* 스테이지 (5.5×8.5cm 포토카드 비율) — 배경은 화면 폭 전체에 깔고(.board), 스테이지 자체는 투명하게 유지 */}
       <div
         ref={stageRef}
         className={styles.stage}
