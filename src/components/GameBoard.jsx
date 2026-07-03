@@ -219,14 +219,15 @@ export function GameBoard() {
         </div>
       </div>
 
-      {/* 초기화 버튼 — 패널 상단에서 30px 위(스테이지는 1:1이라 stageHeight === stageWidth), 기존보다 10px 아래로 */}
+      {/* 초기화 버튼 — 스테이지 우측 하단 원형 리셋 아이콘 (스테이지는 1:1이라 stageHeight === stageWidth) */}
       {(placed || placedProps.length > 0 || bgColor !== '#ffffff' || bgImage) && (
         <button
           className={`${styles.removeBtn} ${saving ? styles.hidden : ''}`}
-          style={{ top: stageWidth ? stageWidth - 54 : undefined }}
+          style={{ top: stageWidth ? stageWidth - 52 : undefined }}
           onClick={() => { reset(); setPlaced(null); setPlacedProps([]) }}
+          aria-label="초기화"
         >
-          초기화
+          🔄
         </button>
       )}
 
