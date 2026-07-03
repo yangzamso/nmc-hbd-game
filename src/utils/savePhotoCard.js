@@ -140,9 +140,9 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     img.src = '/logo-1.png'
   })
   const logoMargin = Math.round(sw * 0.04)
-  const logoW = logo ? Math.round(sw * 0.27) : 0
+  const logoW = logo ? Math.round(sw * 0.30) : 0
   const logoH = logo ? Math.round(logoW * logo.naturalHeight / logo.naturalWidth) : 0
-  const charOffsetY = logo ? logoH : 0
+  const charOffsetY = (logo ? logoH : 0) - 20
 
   // 캐릭터 실제 픽셀 bounding box 계산 → 의상 포함 실제 높이/너비 기준으로 중앙 배치
   const bounds = getNonTransparentBounds(captured)
