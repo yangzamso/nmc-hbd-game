@@ -180,6 +180,20 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   // 캐릭터/의상 최종 선명하게 합성
   ctx.drawImage(captured, srcX, srcY, srcW, srcH, drawX, drawY, scaledW, scaledH)
 
+  // 사진 우측 상단 로고 워터마크 — 사진 폭의 22%, 테두리에서 4% 여백
+  const logo = await new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => resolve(null)
+    img.src = '/logo.png'
+  })
+  if (logo) {
+    const logoMargin = Math.round(sw * 0.04)
+    const logoW = Math.round(sw * 0.22)
+    const logoH = Math.round(logoW * logo.naturalHeight / logo.naturalWidth)
+    ctx.drawImage(logo, padH + sw - logoMargin - logoW, padTop + logoMargin, logoW, logoH)
+  }
+
   // 사진 영역 연한 회색 테두리 — 흰/색 배경 모두와 자연스럽게 구분
   ctx.strokeStyle = 'rgba(0,0,0,0.15)'
   ctx.lineWidth   = 1
