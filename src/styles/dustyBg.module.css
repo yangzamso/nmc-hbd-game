@@ -1,0 +1,15 @@
+/* 인쇄 화면(PrintOverlay)과 동일한 짙은 다크그레이 + 필름 그레인 배경 — 컬렉션 화면 공통 사용 */
+.dustyBg {
+  position: relative;
+  background: #302d2b;
+}
+.dustyBg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+}
