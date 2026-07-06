@@ -3,12 +3,14 @@ import { useSessionStore } from '../store/sessionStore'
 import { SLOTS } from '../data/slots'
 import { COSTUMES } from '../data/costumes'
 import { CapsuleReveal } from '../components/common/CapsuleReveal'
+import { CardFlipGame } from '../games/CardFlipGame'
 import styles from './GameScreen.module.css'
 import dusty from '../styles/dustyBg.module.css'
 
 const costumeById = Object.fromEntries(COSTUMES.map((c) => [c.id, c]))
 
-// 0단계 스켈레톤 — 슬롯별 실제 게임은 3~5단계에서 이 자리를 대체한다.
+// 슬롯1(카드뒤집기)은 3단계에서 실제 게임으로 완성됨.
+// 나머지 슬롯은 아직 스켈레톤(테스트 클리어 버튼)이며 4~5단계에서 이 자리를 대체한다.
 // 슬롯6(럭키드로우)의 정식 관리자 확인 UI는 5단계에서 만들며, 지금은 임시로 prompt()를 사용한다.
 export function GameScreen() {
   const activeSlotId = useSessionStore((s) => s.activeSlotId)
@@ -20,6 +22,12 @@ export function GameScreen() {
   const [error, setError] = useState('')
 
   const slot = SLOTS.find((s) => s.id === activeSlotId)
+
+  function handleGameClear() {
+    const costumeId = getRandomUnownedFromPool()
+    if (!costumeId) return
+    setReward(costumeId)
+  }
 
   async function handleTestClear() {
     setError('')
@@ -34,9 +42,7 @@ export function GameScreen() {
       }
       return
     }
-    const costumeId = getRandomUnownedFromPool()
-    if (!costumeId) return
-    setReward(costumeId)
+    handleGameClear()
   }
 
   async function handleConfirmReveal() {
@@ -49,6 +55,16 @@ export function GameScreen() {
 
   if (reward) {
     return <CapsuleReveal costume={costumeById[reward]} onConfirm={handleConfirmReveal} />
+  }
+
+  if (slot?.id === 1) {
+    return (
+      <div className={`${styles.screen} ${dusty.dustyBg}`}>
+        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <h2 className={styles.title}>{slot.label}</h2>
+        <CardFlipGame onClear={handleGameClear} />
+      </div>
+    )
   }
 
   return (

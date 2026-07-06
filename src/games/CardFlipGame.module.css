@@ -1,0 +1,40 @@
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 220px;
+}
+
+.card {
+  aspect-ratio: 3 / 4;
+  border: none;
+  border-radius: 10px;
+  background: #45403b;
+  color: #948d85;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.faceUp {
+  background: #fff8ee;
+  color: #333;
+  transform: scale(1.03);
+}
+
+.matched {
+  background: #fff3d6;
+  border: 2px solid #ffb347;
+  color: #b8791f;
+  opacity: 0.85;
+}
