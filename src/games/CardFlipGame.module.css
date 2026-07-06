@@ -2,10 +2,10 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   width: 100%;
-  max-width: 220px;
+  max-width: 280px;
 }
 
 .card {
@@ -14,7 +14,7 @@
   border-radius: 10px;
   background: #45403b;
   color: #948d85;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   display: flex;
   align-items: center;

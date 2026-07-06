@@ -10,26 +10,72 @@
   z-index: 300;
 }
 
-.stage {
-  width: 200px;
-  height: 200px;
+/* PrintOverlay.module.css의 replayBtn과 동일한 스타일 — 개발 중 애니메이션 다시보기용 */
+.replayBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 310;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.capsule {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: none;
-  padding: 0;
   cursor: pointer;
   touch-action: manipulation;
+  transition: background 0.15s, transform 0.1s;
+}
+.replayBtn:active {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(0.92);
+}
+
+.successText {
+  color: #fff;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 16px rgba(255, 107, 157, 0.6);
+  animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stage {
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  animation: wiggle 1.4s ease-in-out infinite;
+  width: 200px;
+  height: 300px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* lucky-draw.png: 왼쪽 절반=캡슐 가득 찬 상태, 오른쪽 절반=빈 상태 (559x447, 절반씩 사용)
+   원본 파일의 배경 알파가 완전 투명이 아니라 반투명(128)이었던 걸 스크립트로 재보정해
+   배경은 완전 투명(0), 기계 내부 진열창은 불투명(255)으로 고쳐둠 */
+.machine {
+  width: 176px;
+  height: 280px;
+  background-image: url('/lucky-draw.png');
+  background-size: 200% 100%;
+  background-position: 0% center;
+  background-repeat: no-repeat;
+}
+
+.machineEmpty {
+  background-position: 100% center;
+}
+
+.machineShake {
+  animation: crank-shake 0.22s ease-in-out infinite;
+}
+
+@keyframes crank-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
 }
 
 .capsuleTop,
@@ -50,21 +96,50 @@
   background: #ffffff;
 }
 
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-8deg); }
-  75% { transform: rotate(8deg); }
+.capsuleDrop {
+  position: absolute;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  animation: drop-fall 0.8s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+@keyframes drop-fall {
+  0%   { top: 195px; transform: translateX(-50%); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { top: 280px; transform: translateX(-50%); }
 }
 
 .reveal {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.burst {
+  position: absolute;
+  top: 70px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 130, 0.9) 0%, rgba(255, 107, 157, 0.4) 45%, rgba(255, 107, 157, 0) 70%);
+  animation: burst 0.7s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes burst {
+  0%   { transform: scale(0.2); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 
 .revealImg {
+  position: relative;
   width: 140px;
   height: 140px;
   object-fit: contain;
@@ -72,6 +147,7 @@
 }
 
 .revealName {
+  position: relative;
   color: #fff;
   font-size: 18px;
   font-weight: 700;

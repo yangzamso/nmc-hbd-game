@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import styles from './CardFlipGame.module.css'
 
 // 실제 사진 소재로 교체 예정 — 지금은 placeholder 텍스트 (docs/PRD-collection-game.md 6절)
-const CARD_LABELS = ['야바위 라이토', '류헤이', '머큐리', '파란정장', '아저씨']
+// 3x4(12칸) 그리드라 6쌍 필요
+const CARD_LABELS = ['야바위 라이토', '류헤이', '머큐리', '파란정장', '아저씨', '탐정']
 
 function shuffle(array) {
   const arr = [...array]

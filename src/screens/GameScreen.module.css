@@ -8,6 +8,7 @@
   padding: 24px;
   min-height: 100svh;
   position: relative;
+  overflow-y: auto;
 }
 
 .backBtn {
