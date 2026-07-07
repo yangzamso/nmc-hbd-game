@@ -1,13 +1,24 @@
+/* 모든 단계(성공/크랭크/캡슐낙하/공개)에서 기본 화면과 동일한 다크그레이 + 필름 그레인 배경 사용 (dustyBg.module.css와 동일 스펙) */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: #302d2b;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 28px;
   z-index: 300;
+}
+.overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
 }
 
 /* PrintOverlay.module.css의 replayBtn과 동일한 스타일 — 개발 중 애니메이션 다시보기용 */
@@ -53,15 +64,13 @@
   justify-content: center;
 }
 
-/* lucky-draw.png: 왼쪽 절반=캡슐 가득 찬 상태 (559x447, 절반만 사용)
-   원본 파일의 배경 알파가 완전 투명이 아니라 반투명(128)이었던 걸 스크립트로 재보정해
-   배경은 완전 투명(0), 기계 내부 진열창은 불투명(255)으로 고쳐둠 */
+/* lucky-draw.png: 캡슐 가득 찬 뽑기 기계 이미지 한 장 (275x500, 세로형) */
 .machine {
   width: 176px;
   height: 280px;
   background-image: url('/lucky-draw.png');
-  background-size: 200% 100%;
-  background-position: 0% center;
+  background-size: contain;
+  background-position: center;
   background-repeat: no-repeat;
 }
 
@@ -85,23 +94,35 @@
 
 .capsuleTop {
   top: 0;
-  background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+  background: #ffd166;
 }
 
 .capsuleBottom {
   bottom: 0;
-  background: #ffffff;
+  background: #ff4d94;
 }
 
 .capsuleDrop {
   position: absolute;
   left: 50%;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
   animation: drop-fall 0.6s linear forwards;
+}
+
+/* 하이라이트(좌상단 반사광)+그림자(우하단 음영)를 겹쳐 입체 구슬처럼 보이게 함 */
+.capsuleDrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.35) 22%, rgba(255, 255, 255, 0) 45%),
+    radial-gradient(circle at 72% 78%, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 55%);
+  pointer-events: none;
 }
 
 @keyframes drop-fall {
@@ -119,20 +140,36 @@
   animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* 이미지와 정확히 같은 크기/중심을 공유하는 래퍼 — 글로우가 항상 이미지 중앙에 오도록 함 */
+.imageWrap {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 반짝 — 이미지 중앙을 기준으로 짧게 나타났다가 사라지는 글로우. 단일 웜톤 + 블러로 자연스럽게 퍼지도록 함 */
 .burst {
   position: absolute;
-  top: 70px;
-  width: 180px;
-  height: 180px;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  margin: -100px 0 0 -100px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 214, 130, 0.9) 0%, rgba(255, 107, 157, 0.4) 45%, rgba(255, 107, 157, 0) 70%);
-  animation: burst 0.7s ease-out forwards;
+  background: radial-gradient(circle, rgba(255, 224, 170, 0.85) 0%, rgba(255, 214, 130, 0.4) 35%, rgba(255, 214, 130, 0) 70%);
+  filter: blur(4px);
+  opacity: 0;
+  animation: glowFade 0.7s ease-out forwards;
   pointer-events: none;
 }
 
-@keyframes burst {
-  0%   { transform: scale(0.2); opacity: 0.9; }
-  100% { transform: scale(1.6); opacity: 0; }
+@keyframes glowFade {
+  0% { opacity: 0; transform: scale(0.7); }
+  30% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.15); }
 }
 
 .revealImg {

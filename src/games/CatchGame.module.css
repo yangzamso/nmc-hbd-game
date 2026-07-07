@@ -1,0 +1,89 @@
+.catch {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 옷이 위→아래로 떨어지는 통로 */
+.chute {
+  position: relative;
+  width: 180px;
+  height: 260px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 22px 34px -6px rgba(0, 0, 0, 0.4),
+    0 10px 14px -6px rgba(0, 0, 0, 0.3),
+    inset 0 4px 10px rgba(255, 255, 255, 0.06),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* 매 스텝마다 key가 바뀌며 새로 마운트되어 애니메이션이 다시 재생됨 */
+.dropItem {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 96px;
+  height: 96px;
+  margin-left: -48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: dropFall 0.26s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes dropFall {
+  0% { transform: translateY(-40px); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(150px); opacity: 1; }
+}
+
+.dropImg {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.blankText {
+  font-family: 'NexonMaplestory', var(--sans);
+  font-size: 32px;
+  font-weight: 700;
+  color: #444;
+}
+
+/* 캐치존 — 옷이 최종적으로 걸리는 위치 표시 */
+.catchZone {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  width: 128px;
+  height: 3px;
+  margin-left: -64px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #ffb347, transparent);
+}
+
+.duplicateMsg {
+  color: #ff8aa8;
+  font-size: 13px;
+  text-align: center;
+}
+
+.startBtn {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  touch-action: manipulation;
+  background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.35);
+}

@@ -129,10 +129,13 @@ export function RouletteGame({ ownedIds, alreadyCleared, onResult }) {
             )
           })}
         </div>
+        <div className={styles.wheelGloss} />
         <div className={styles.hub} />
       </div>
 
-      {retryMsg && <p className={styles.duplicateMsg}>{retryMsg}</p>}
+      <p className={styles.duplicateMsg} style={{ visibility: retryMsg ? 'visible' : 'hidden' }}>
+        {retryMsg || ' '}
+      </p>
 
       <button
         className={styles.startBtn}

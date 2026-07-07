@@ -3,22 +3,72 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
   max-width: 320px;
   padding: 0 4px;
 }
 
+.progress {
+  align-self: center;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
 .question {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: fadeIn 0.25s ease;
+}
+
+.questionHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.questionBadge {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .questionText {
-  font-size: 13px;
+  flex: 1;
+  font-size: 14px;
   color: #fff;
-  line-height: 1.4;
+  line-height: 1.55;
+  text-align: left;
+  white-space: pre-line;
+}
+
+/* 안내 문구와 구분되는 인용구 블록 (예: 앨범 소개 글) */
+.excerpt {
+  padding: 12px 14px;
+  border-left: 3px solid #ff9a6c;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  line-height: 1.6;
   text-align: left;
   white-space: pre-line;
 }
@@ -26,40 +76,75 @@
 .blanks {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .options {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-align: left;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
   border: 1px solid #4a453f;
-  background: #45403b;
+  background: #3a3631;
   color: #d8d3cc;
   font-size: 13px;
   cursor: pointer;
   touch-action: manipulation;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.option:active {
+  transform: scale(0.98);
+}
+
+.optionBadge {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.optionText {
+  flex: 1;
 }
 
 .selected {
-  border-color: #ffb347;
+  border-color: #ff9a6c;
   background: #55483a;
+  color: #fff;
+}
+.selected .optionBadge {
+  background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
   color: #fff;
 }
 
 .textInput {
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
   border: 1px solid #4a453f;
-  background: #45403b;
+  background: #3a3631;
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.textInput:focus {
+  outline: none;
+  border-color: #ff9a6c;
+  background: #45403b;
 }
 .textInput::placeholder {
   color: #948d85;
@@ -71,8 +156,24 @@
   text-align: center;
 }
 
+.nav {
+  display: flex;
+  gap: 10px;
+}
+
+.prevBtn {
+  padding: 14px 20px;
+  border: none;
+  border-radius: 24px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
 .submitBtn {
-  margin-top: 4px;
+  flex: 1;
   padding: 14px 0;
   border: none;
   border-radius: 24px;
@@ -83,4 +184,9 @@
   cursor: pointer;
   touch-action: manipulation;
   box-shadow: 0 4px 16px rgba(255, 107, 157, 0.35);
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
 }

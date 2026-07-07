@@ -25,6 +25,10 @@ export function QuizGame({ onClear, onFail }) {
   const [questions] = useState(pickQuizSet)
   const [answers, setAnswers] = useState({})
   const [error, setError] = useState('')
+  const [index, setIndex] = useState(0)
+
+  const q = questions[index]
+  const isLast = index === questions.length - 1
 
   function selectOption(qId, optionIndex) {
     setAnswers((prev) => ({ ...prev, [qId]: optionIndex }))
@@ -38,14 +42,27 @@ export function QuizGame({ onClear, onFail }) {
     })
   }
 
+  function goPrev() {
+    setError('')
+    setIndex((i) => Math.max(0, i - 1))
+  }
+
+  function goNext() {
+    if (!isAnswered(q, answers[q.id])) {
+      setError('정답을 입력해주세요')
+      return
+    }
+    setError('')
+    setIndex((i) => i + 1)
+  }
+
   function handleSubmit() {
-    const unanswered = questions.some((q) => !isAnswered(q, answers[q.id]))
-    if (unanswered) {
-      setError('모든 문항에 답해주세요')
+    if (!isAnswered(q, answers[q.id])) {
+      setError('정답을 입력해주세요')
       return
     }
 
-    const allCorrect = questions.every((q) => isCorrect(q, answers[q.id]))
+    const allCorrect = questions.every((qq) => isCorrect(qq, answers[qq.id]))
     if (!allCorrect) {
       onFail()
       return
@@ -57,39 +74,57 @@ export function QuizGame({ onClear, onFail }) {
 
   return (
     <div className={styles.quiz}>
-      {questions.map((q, qIndex) => (
-        <div key={q.id} className={styles.question}>
-          <p className={styles.questionText}>{qIndex + 1}. {q.question}</p>
-          {q.type === 'text' ? (
-            <div className={styles.blanks}>
-              {q.blanks.map((_, i) => (
-                <input
-                  key={i}
-                  className={styles.textInput}
-                  type="text"
-                  value={(answers[q.id] && answers[q.id][i]) || ''}
-                  onChange={(e) => setBlankAnswer(q.id, i, e.target.value)}
-                  placeholder={q.blanks.length > 1 ? `빈칸 ${i + 1} 정답` : '정답 입력'}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className={styles.options}>
-              {q.options.map((opt, i) => (
-                <button
-                  key={i}
-                  className={`${styles.option} ${answers[q.id] === i ? styles.selected : ''}`}
-                  onClick={() => selectOption(q.id, i)}
-                >
-                  {i + 1}) {opt}
-                </button>
-              ))}
-            </div>
-          )}
+      <p className={styles.progress}>{index + 1} / {questions.length}</p>
+
+      <div key={q.id} className={styles.question}>
+        <div className={styles.questionHead}>
+          <span className={styles.questionBadge}>{index + 1}</span>
+          <p className={styles.questionText}>{q.question}</p>
         </div>
-      ))}
+
+        {q.excerpt && <p className={styles.excerpt}>{q.excerpt}</p>}
+
+        {q.type === 'text' ? (
+          <div className={styles.blanks}>
+            {q.blanks.map((_, i) => (
+              <input
+                key={i}
+                className={styles.textInput}
+                type="text"
+                value={(answers[q.id] && answers[q.id][i]) || ''}
+                onChange={(e) => setBlankAnswer(q.id, i, e.target.value)}
+                placeholder={q.blanks.length > 1 ? `빈칸 ${i + 1} 정답` : '정답 입력'}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className={styles.options}>
+            {q.options.map((opt, i) => (
+              <button
+                key={i}
+                className={`${styles.option} ${answers[q.id] === i ? styles.selected : ''}`}
+                onClick={() => selectOption(q.id, i)}
+              >
+                <span className={styles.optionBadge}>{String.fromCharCode(65 + i)}</span>
+                <span className={styles.optionText}>{opt}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       {error && <p className={styles.error}>{error}</p>}
-      <button className={styles.submitBtn} onClick={handleSubmit}>제출하기</button>
+
+      <div className={styles.nav}>
+        {index > 0 && (
+          <button className={styles.prevBtn} onClick={goPrev}>이전</button>
+        )}
+        {isLast ? (
+          <button className={styles.submitBtn} onClick={handleSubmit}>제출하기</button>
+        ) : (
+          <button className={styles.submitBtn} onClick={goNext}>다음</button>
+        )}
+      </div>
     </div>
   )
 }

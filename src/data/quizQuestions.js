@@ -45,9 +45,8 @@ export const QUIZ_GROUPS = [
       },
       {
         type: 'text',
-        question:
-          '(Stay Close 갤럭시 키즈 앨범 소개 글) 다음 빈칸을 채우시오\n' +
-          '202509xx 20살 머큐리와 21살 주피터, □□에서 □□으로 가는 길목 어딘가',
+        question: '(Stay Close 갤럭시 키즈 앨범 소개 글) 다음 빈칸을 채우시오',
+        excerpt: '202509xx 20살 머큐리와 21살 주피터,\n□□에서 □□으로 가는 길목 어딘가',
         blanks: ['소년', '어른'],
       },
     ],

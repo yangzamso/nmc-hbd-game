@@ -61,8 +61,10 @@ export function CapsuleReveal({ costume, onConfirm }) {
 
       {phase === 'opened' && (
         <div className={styles.reveal}>
-          <span className={styles.burst} />
-          <img src={costume.image} alt={costume.name} className={styles.revealImg} />
+          <div className={styles.imageWrap}>
+            <span className={styles.burst} />
+            <img src={costume.image} alt={costume.name} className={styles.revealImg} />
+          </div>
           <p className={styles.revealName}>{costume.name} 획득!</p>
         </div>
       )}
