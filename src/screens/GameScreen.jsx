@@ -6,6 +6,7 @@ import { CapsuleReveal } from '../components/common/CapsuleReveal'
 import { Modal } from '../components/common/Modal'
 import { CardFlipGame } from '../games/CardFlipGame'
 import { QuizGame } from '../games/QuizGame'
+import { RouletteGame } from '../games/RouletteGame'
 import styles from './GameScreen.module.css'
 import dusty from '../styles/dustyBg.module.css'
 
@@ -83,6 +84,21 @@ export function GameScreen() {
             재도전 해주세요
           </Modal>
         )}
+      </div>
+    )
+  }
+
+  if (slot?.id === 3) {
+    const ownedIds = Object.values(slots).filter(Boolean)
+    return (
+      <div className={`${styles.screen} ${dusty.dustyBg}`}>
+        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <h2 className={styles.title}>{slot.label}</h2>
+        <RouletteGame
+          ownedIds={ownedIds}
+          alreadyCleared={slots[3]}
+          onResult={(costumeId) => setReward(costumeId)}
+        />
       </div>
     )
   }

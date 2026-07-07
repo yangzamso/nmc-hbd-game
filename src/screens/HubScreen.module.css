@@ -113,3 +113,22 @@
   touch-action: manipulation;
   box-shadow: 0 4px 16px rgba(255, 107, 157, 0.35);
 }
+
+/* 로컬 개발용 — 우측 하단 고정, 프로덕션 빌드에는 포함되지 않음 */
+.devResetBtn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.devResetBtn:active {
+  background: rgba(0, 0, 0, 0.6);
+}

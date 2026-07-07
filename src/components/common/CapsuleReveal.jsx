@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import styles from './CapsuleReveal.module.css'
 
-const SUCCESS_MS = 900
-const CRANK_MS = 1400
-const DROP_MS = 800
+const SUCCESS_MS = 700
+const CRANK_MS = 1000
+const DROP_MS = 600
 
 // 모든 미니게임이 클리어 후 공유하는 뽑기(가챠) 리빌 연출
 // 성공! → 뽑기 기계 크랭크 돌리기 → 캡슐 배출+낙하 → 자동으로 열리며 아이템 짠! 등장
@@ -47,7 +47,6 @@ export function CapsuleReveal({ costume, onConfirm }) {
           <div
             className={[
               styles.machine,
-              phase === 'dropping' ? styles.machineEmpty : '',
               phase === 'cranking' ? styles.machineShake : '',
             ].join(' ')}
           />

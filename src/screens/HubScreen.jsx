@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSessionStore } from '../store/sessionStore'
 import { SLOTS } from '../data/slots'
 import { COSTUMES } from '../data/costumes'
@@ -11,8 +12,19 @@ export function HubScreen() {
   const slots = useSessionStore((s) => s.slots)
   const openSlot = useSessionStore((s) => s.openSlot)
   const goToDressup = useSessionStore((s) => s.goToDressup)
+  const resetSlots = useSessionStore((s) => s.resetSlots)
+  const [resetting, setResetting] = useState(false)
 
   const clearedCount = Object.values(slots).filter(Boolean).length
+
+  async function handleReset() {
+    setResetting(true)
+    try {
+      await resetSlots()
+    } finally {
+      setResetting(false)
+    }
+  }
 
   return (
     <div className={`${styles.hub} ${dusty.dustyBg}`}>
@@ -35,8 +47,8 @@ export function HubScreen() {
                 slot.disabled ? styles.disabled : '',
                 cleared ? styles.cleared : '',
               ].join(' ')}
-              onClick={() => !slot.disabled && openSlot(slot.id)}
-              disabled={slot.disabled}
+              onClick={() => !slot.disabled && !resetting && openSlot(slot.id)}
+              disabled={slot.disabled || resetting}
             >
               {cleared ? (
                 <img src={costume.image} alt={costume.name} className={styles.tileImg} />
@@ -53,6 +65,13 @@ export function HubScreen() {
 
       {clearedCount === 6 && (
         <button className={styles.completeBtn} onClick={goToDressup}>코디하러 가기</button>
+      )}
+
+      {/* 로컬 개발용 — 프로덕션 빌드에서는 렌더링되지 않음 */}
+      {import.meta.env.DEV && (
+        <button className={styles.devResetBtn} onClick={handleReset} disabled={resetting}>
+          {resetting ? '초기화 중...' : '슬롯 비우기'}
+        </button>
       )}
     </div>
   )

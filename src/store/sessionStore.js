@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { COSTUMES } from '../data/costumes'
 import { EMPTY_SLOTS } from '../data/slots'
-import { updateSlot, adminVerifySlot6 } from '../utils/api'
+import { updateSlot, adminVerifySlot6, resetSlots as resetSlotsApi } from '../utils/api'
 
 const GAME_POOL = COSTUMES.filter((c) => c.id !== 'strawberry').map((c) => c.id)
 
@@ -26,6 +26,13 @@ export const useSessionStore = create((set, get) => ({
   adminClearSlot6: async (adminPassword) => {
     const { nickname } = get()
     const { slots } = await adminVerifySlot6(nickname, adminPassword)
+    set({ slots })
+  },
+
+  // 로컬 개발용 — 슬롯 전체 초기화
+  resetSlots: async () => {
+    const { nickname, password } = get()
+    const { slots } = await resetSlotsApi(nickname, password)
     set({ slots })
   },
 

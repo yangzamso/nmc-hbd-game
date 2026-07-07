@@ -31,3 +31,8 @@ export function updateSlot(nickname, password, slotId, costumeId) {
 export function adminVerifySlot6(nickname, adminPassword) {
   return post('/api/admin-verify', { nickname, adminPassword })
 }
+
+// 로컬 개발용 — 슬롯 전체 초기화
+export function resetSlots(nickname, password) {
+  return post('/api/reset-slots', { nickname, password })
+}

@@ -1,0 +1,106 @@
+.roulette {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.wheelWrap {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 흰색/옅은 회색 타일, 6칸(옷 5종 + 꽝 1칸)이라 60도씩 */
+.wheel {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(#ffffff 0deg 60deg, #e5e4e7 60deg 120deg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 3px solid #ffb347;
+  overflow: hidden;
+}
+
+/* 판 반지름(140px) 안에 완전히 들어오도록 배치 반지름(100px)+칩 반지름(37px)+여백을 계산.
+   원형 배지/그림자 없이 이미지만 파이 안에 최대한 크게 배치 */
+.chip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 74px;
+  height: 74px;
+  margin: -37px 0 0 -37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chipImg {
+  width: 74px;
+  height: 74px;
+  object-fit: contain;
+}
+
+
+.blankText {
+  font-family: 'NexonMaplestory', var(--sans);
+  font-size: 32px;
+  font-weight: 700;
+  color: #222;
+}
+
+/* 시계 바늘처럼 판 중앙에서 뻗어나오는 고정 바늘 — 판이 회전해도 이 바늘은 움직이지 않고 12시 방향 고정.
+   이등변삼각형(밑변 14px, 길이 = 판 지름의 20% = 56px)으로 가늘고 황금색 */
+.pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin: -56px 0 0 -7px;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 56px solid #d4af37;
+  z-index: 4;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ffb347;
+  z-index: 5;
+}
+
+.duplicateMsg {
+  color: #ff8aa8;
+  font-size: 13px;
+  text-align: center;
+}
+
+.startBtn {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  touch-action: manipulation;
+  background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.35);
+}

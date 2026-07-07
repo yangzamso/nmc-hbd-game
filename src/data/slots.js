@@ -1,8 +1,9 @@
 // 컬렉션 허브 6슬롯 정의 — docs/PRD-collection-game.md 참고
+// 배열 순서 = 허브 화면에 보여지는 순서. id는 DB 슬롯 컬럼(slot1~6)과 게임 라우팅에 쓰이므로 순서와 무관하게 고정.
 export const SLOTS = [
   { id: 1, game: 'card',      label: '카드 뒤집기' },
-  { id: 2, game: 'quiz',      label: '퀴즈' },
   { id: 3, game: 'roulette',  label: '룰렛' },
+  { id: 2, game: 'quiz',      label: '퀴즈' },
   { id: 4, game: 'catch',     label: '낙하 캐치' },
   { id: 5, game: 'shake',     label: '흔들기',     disabled: true }, // 개발 보류 (기획만 존재)
   { id: 6, game: 'lucky',     label: '럭키드로우', special: true },  // 포토카드 구매 전용 (딸기)
