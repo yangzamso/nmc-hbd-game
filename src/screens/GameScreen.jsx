@@ -51,9 +51,9 @@ export function GameScreen() {
     handleGameClear()
   }
 
-  async function handleConfirmReveal() {
+  function handleConfirmReveal() {
     if (!slot.special) {
-      await clearSlot(slot.id, reward)
+      clearSlot(slot.id, reward)
     }
     setReward(null)
     backToHub()
