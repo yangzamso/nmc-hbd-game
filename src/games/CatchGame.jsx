@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { COSTUMES } from '../data/costumes'
+import { COSTUMES, CHARACTER_CROP, getCostumeDisplaySize } from '../data/costumes'
 import styles from './CatchGame.module.css'
 
 // 옷 5종 + 꽝 1칸 = 총 6칸 (룰렛과 동일 풀/재도전 로직 재사용, PRD 6절)
@@ -7,23 +7,26 @@ const ITEMS = [
   ...COSTUMES.filter((c) => c.id !== 'strawberry'),
   { id: 'blank', name: '꽝', image: null },
 ]
-const FAST_TICK_MS = 260
-const FAST_DURATION_MS = 1500
-// 감속 구간 — 스텝마다 점점 느려짐 (합계 1800ms, 룰렛 DECEL_MS와 동일 페이싱)
-const DECEL_STEPS_MS = [200, 260, 340, 440, 560]
-const SETTLE_DELAY_MS = 1000
+const TICK_MS = 320 // 옷이 바뀌는 간격
+const SETTLE_DELAY_MS = 800
 
-// 시작 시 "아저씨" 칸이 캐치존에 오도록 초기값 고정 (룰렛의 INITIAL_ROTATION과 동일 개념)
+// 시작 시 "아저씨" 칸이 보이도록 초기값 고정
 const AJUSSI_INDEX = ITEMS.findIndex((c) => c.id === 'ajussi')
 
-// 슬롯4 낙하 캐치 — 옷이 위에서 아래로 순환하며 떨어지다가(START) STOP 시점에 캐치존에 걸린 옷이 결과.
-// 룰렛(슬롯3)과 동일하게 미리 목표 칸을 정해두고, 그 칸에서 정확히 멈추도록 스텝을 스케줄링.
-// 재도전/보상 로직도 룰렛과 동일: 이미 클리어된 슬롯은 원래 옷 그대로, 꽝/중복이면 재도전 안내.
+// .characterImg의 실제 표시 너비(CSS)와 동일해야 옷 배율이 캐릭터와 일치함
+const CHAR_IMG_W = 140
+const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
+const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
+
+// 슬롯4 낙하 캐치 — 원본 캐릭터 위로 옷이 위→아래로 차례대로 로테이션되며 떨어지고,
+// START로 시작해 STOP을 누르는 순간 화면에 걸려있던 옷이 결과로 확정된다.
+// 재도전/보상 로직은 룰렛(슬롯3)과 동일: 꽝/중복이면 재도전, 새 옷이면 캡슐 가챠로 확정.
+// 이미 클리어된 슬롯(재도전)은 정지 타이밍과 무관하게 항상 원래 옷으로 스냅되어 확정된다.
 export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
   const [index, setIndex] = useState(AJUSSI_INDEX)
   const [dropKey, setDropKey] = useState(0)
-  const [falling, setFalling] = useState(false)
-  const [settling, setSettling] = useState(false)
+  const [started, setStarted] = useState(false)
+  const [running, setRunning] = useState(false)
   const [showingResult, setShowingResult] = useState(false)
   const [retryMsg, setRetryMsg] = useState('')
   const intervalRef = useRef(null)
@@ -41,96 +44,80 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
     setDropKey((k) => k + 1)
   }
 
-  function advance() {
-    showIndex((indexRef.current + 1) % ITEMS.length)
-  }
-
   function handleStart() {
     setRetryMsg('')
-    setFalling(true)
-    intervalRef.current = setInterval(advance, FAST_TICK_MS)
-
-    const t0 = setTimeout(startDecel, FAST_DURATION_MS)
-    timeoutsRef.current.push(t0)
+    setStarted(true)
+    setRunning(true)
+    intervalRef.current = setInterval(() => {
+      showIndex((indexRef.current + 1) % ITEMS.length)
+    }, TICK_MS)
   }
 
-  function startDecel() {
+  function handleStop() {
     clearInterval(intervalRef.current)
-    setFalling(false)
-    setSettling(true)
+    setRunning(false)
 
-    // 목표 칸을 미리 정하고, 감속 마지막 스텝에서 정확히 그 칸에 멈추도록 함
-    // 이미 클리어된 슬롯(재도전)은 반드시 원래 옷에서 멈추도록 목표를 고정
-    const targetIndex = alreadyCleared
-      ? ITEMS.findIndex((c) => c.id === alreadyCleared)
-      : Math.floor(Math.random() * ITEMS.length)
+    // 재도전(이미 클리어된 슬롯)은 정지 타이밍과 무관하게 원래 옷 칸으로 스냅
+    if (alreadyCleared) {
+      showIndex(ITEMS.findIndex((c) => c.id === alreadyCleared))
+    }
 
-    let cumulative = 0
-    DECEL_STEPS_MS.forEach((stepDelay, i) => {
-      cumulative += stepDelay
-      const isLast = i === DECEL_STEPS_MS.length - 1
-      const t = setTimeout(() => {
-        if (isLast) {
-          showIndex(targetIndex)
-        } else {
-          advance()
-        }
-      }, cumulative)
-      timeoutsRef.current.push(t)
-    })
+    setShowingResult(true)
+    const landedId = alreadyCleared || ITEMS[indexRef.current].id
 
-    const t1 = setTimeout(() => {
-      setSettling(false)
-      setShowingResult(true)
-
-      const t2 = setTimeout(() => {
-        setShowingResult(false)
-        if (alreadyCleared) {
-          onResult(alreadyCleared)
-          return
-        }
-        const landed = ITEMS[targetIndex]
-        if (landed.id === 'blank') {
-          setRetryMsg('꽝! 다시 떨어뜨려주세요')
-        } else if (ownedIds.includes(landed.id)) {
-          setRetryMsg('이미 보유한 옷이에요! 다시 떨어뜨려주세요')
-        } else {
-          onResult(landed.id)
-        }
-      }, SETTLE_DELAY_MS)
-      timeoutsRef.current.push(t2)
-    }, cumulative)
-    timeoutsRef.current.push(t1)
+    const t = setTimeout(() => {
+      setShowingResult(false)
+      if (alreadyCleared) {
+        onResult(alreadyCleared)
+        return
+      }
+      if (landedId === 'blank') {
+        setRetryMsg('꽝! 다시 도전해주세요')
+      } else if (ownedIds.includes(landedId)) {
+        setRetryMsg('이미 보유한 옷이에요! 다시 도전해주세요')
+      } else {
+        onResult(landedId)
+      }
+    }, SETTLE_DELAY_MS)
+    timeoutsRef.current.push(t)
   }
 
   const current = ITEMS[index]
-  const isDropping = falling || settling
+  const currentSize = current.id !== 'blank' ? getCostumeDisplaySize(current, CHAR_SCALE) : null
 
   return (
     <div className={styles.catch}>
-      <div className={styles.chute}>
-        <div key={dropKey} className={styles.dropItem}>
-          {current.id === 'blank' ? (
-            <span className={styles.blankText}>꽝</span>
-          ) : (
-            <img src={current.image} alt={current.name} className={styles.dropImg} />
-          )}
-        </div>
-        <div className={styles.catchZone} />
+      <div className={styles.stage}>
+        <img src="/items/character_base.png" alt="닛몰캐쉬" className={styles.characterImg} draggable={false} />
+        {started && (
+          <div key={dropKey} className={styles.dropItem}>
+            {current.id === 'blank' ? (
+              <span className={styles.blankText}>꽝</span>
+            ) : (
+              <img
+                src={current.image}
+                alt={current.name}
+                className={styles.dropImg}
+                style={{ width: currentSize.w, height: currentSize.h }}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       <p className={styles.duplicateMsg} style={{ visibility: retryMsg ? 'visible' : 'hidden' }}>
         {retryMsg || ' '}
       </p>
 
-      <button
-        className={styles.startBtn}
-        onClick={handleStart}
-        disabled={isDropping || showingResult}
-        style={{ visibility: isDropping || showingResult ? 'hidden' : 'visible' }}
-      >
-        START
-      </button>
+      {!running && !showingResult && (
+        <button className={styles.startBtn} onClick={handleStart}>START</button>
+      )}
+      {running && (
+        <button className={styles.stopBtn} onClick={handleStop}>STOP</button>
+      )}
+      {!running && showingResult && (
+        <button className={styles.startBtn} style={{ visibility: 'hidden' }}>START</button>
+      )}
     </div>
   )
 }
