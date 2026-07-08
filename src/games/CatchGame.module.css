@@ -25,7 +25,8 @@
 }
 
 /* 매 스텝마다 key가 바뀌며 새로 마운트되어 캐릭터 위 제자리에서 스냅 전환 애니메이션이 재생됨.
-   옷마다 크기가 달라서(캐릭터 배율에 맞춤) 고정폭 대신 translate(-50%, -50%)로 캐릭터 중앙에 겹쳐 고정 */
+   옷마다 크기가 달라서(캐릭터 배율에 맞춤) 고정폭 대신 translate(-50%, -50%)로 캐릭터 중앙에 겹쳐 고정하고,
+   의상별 세로 보정값(--wornDy, CatchGame.jsx의 WORN_OFFSET_Y)을 더해 실제 몸 위치에 맞춤 */
 .wornItem {
   position: absolute;
   left: 50%;
@@ -37,20 +38,13 @@
 }
 
 @keyframes wornSwap {
-  0% { transform: translate(-50%, -50%) scale(0.94); opacity: 0.4; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  0% { transform: translate(-50%, calc(-50% + var(--wornDy, 0px))) scale(0.94); opacity: 0.4; }
+  100% { transform: translate(-50%, calc(-50% + var(--wornDy, 0px))) scale(1); opacity: 1; }
 }
 
 .wornImg {
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
-}
-
-.blankText {
-  font-family: 'NexonMaplestory', var(--sans);
-  font-size: 32px;
-  font-weight: 700;
-  color: #444;
 }
 
 .duplicateMsg {
