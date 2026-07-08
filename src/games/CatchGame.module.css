@@ -24,25 +24,24 @@
   object-fit: contain;
 }
 
-/* 매 스텝마다 key가 바뀌며 새로 마운트되어 낙하 애니메이션이 다시 재생됨.
-   옷마다 크기가 달라서(캐릭터 배율에 맞춤) 고정폭 대신 translate(-50%, ...)로 가운데 정렬 */
-.dropItem {
+/* 매 스텝마다 key가 바뀌며 새로 마운트되어 캐릭터 위 제자리에서 스냅 전환 애니메이션이 재생됨.
+   옷마다 크기가 달라서(캐릭터 배율에 맞춤) 고정폭 대신 translate(-50%, -50%)로 캐릭터 중앙에 겹쳐 고정 */
+.wornItem {
   position: absolute;
   left: 50%;
-  top: 0;
+  top: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: dropFall 0.26s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: wornSwap 0.12s ease-out;
 }
 
-@keyframes dropFall {
-  0% { transform: translate(-50%, -30px); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translate(-50%, 90px); opacity: 1; }
+@keyframes wornSwap {
+  0% { transform: translate(-50%, -50%) scale(0.94); opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
-.dropImg {
+.wornImg {
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
 }

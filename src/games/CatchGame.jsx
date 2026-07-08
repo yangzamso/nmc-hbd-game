@@ -7,7 +7,7 @@ const ITEMS = [
   ...COSTUMES.filter((c) => c.id !== 'strawberry'),
   { id: 'blank', name: '꽝', image: null },
 ]
-const TICK_MS = 320 // 옷이 바뀌는 간격
+const TICK_MS = 110 // 옷이 바뀌는 간격 (제자리에서 빠르게 순환)
 const SETTLE_DELAY_MS = 800
 
 // 시작 시 "아저씨" 칸이 보이도록 초기값 고정
@@ -18,13 +18,13 @@ const CHAR_IMG_W = 140
 const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
 
-// 슬롯4 낙하 캐치 — 원본 캐릭터 위로 옷이 위→아래로 차례대로 로테이션되며 떨어지고,
-// START로 시작해 STOP을 누르는 순간 화면에 걸려있던 옷이 결과로 확정된다.
+// 슬롯4 캐치캐치 — 캐릭터 위에 옷이 입혀진 채로 제자리에서 빠르게 순환 전환되고,
+// START로 시작해 STOP을 누르는 순간 그 시점에 캐릭터가 입고 있던 옷이 결과로 확정된다.
 // 재도전/보상 로직은 룰렛(슬롯3)과 동일: 꽝/중복이면 재도전, 새 옷이면 캡슐 가챠로 확정.
 // 이미 클리어된 슬롯(재도전)은 정지 타이밍과 무관하게 항상 원래 옷으로 스냅되어 확정된다.
 export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
   const [index, setIndex] = useState(AJUSSI_INDEX)
-  const [dropKey, setDropKey] = useState(0)
+  const [swapKey, setSwapKey] = useState(0)
   const [started, setStarted] = useState(false)
   const [running, setRunning] = useState(false)
   const [showingResult, setShowingResult] = useState(false)
@@ -41,7 +41,7 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
   function showIndex(nextIndex) {
     indexRef.current = nextIndex
     setIndex(nextIndex)
-    setDropKey((k) => k + 1)
+    setSwapKey((k) => k + 1)
   }
 
   function handleStart() {
@@ -90,14 +90,14 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
       <div className={styles.stage}>
         <img src="/items/character_base.png" alt="닛몰캐쉬" className={styles.characterImg} draggable={false} />
         {started && (
-          <div key={dropKey} className={styles.dropItem}>
+          <div key={swapKey} className={styles.wornItem}>
             {current.id === 'blank' ? (
               <span className={styles.blankText}>꽝</span>
             ) : (
               <img
                 src={current.image}
                 alt={current.name}
-                className={styles.dropImg}
+                className={styles.wornImg}
                 style={{ width: currentSize.w, height: currentSize.h }}
               />
             )}

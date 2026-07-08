@@ -4,7 +4,7 @@ export const SLOTS = [
   { id: 1, game: 'card',      label: '카드 뒤집기' },
   { id: 3, game: 'roulette',  label: '룰렛' },
   { id: 2, game: 'quiz',      label: '퀴즈' },
-  { id: 4, game: 'catch',     label: '낙하 캐치' },
+  { id: 4, game: 'catch',     label: '캐치캐치' },
   { id: 5, game: 'shake',     label: '흔들기',     disabled: true }, // 개발 보류 (기획만 존재)
   { id: 6, game: 'lucky',     label: '럭키드로우', special: true },  // 포토카드 구매 전용 (딸기)
 ]

@@ -13,7 +13,7 @@ import dusty from '../styles/dustyBg.module.css'
 
 const costumeById = Object.fromEntries(COSTUMES.map((c) => [c.id, c]))
 
-// 슬롯1(카드뒤집기)/슬롯2(퀴즈)/슬롯3(룰렛)/슬롯4(낙하 캐치)는 실제 게임으로 완성됨.
+// 슬롯1(카드뒤집기)/슬롯2(퀴즈)/슬롯3(룰렛)/슬롯4(캐치캐치)는 실제 게임으로 완성됨.
 // 슬롯5(흔들기)는 PRD상 개발 보류 상태라 스켈레톤(테스트 클리어 버튼) 그대로 유지.
 // 슬롯6(럭키드로우)의 정식 관리자 확인 UI는 5단계에서 만들며, 지금은 임시로 prompt()를 사용한다.
 export function GameScreen() {
