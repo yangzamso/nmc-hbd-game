@@ -3,8 +3,30 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 28px 20px;
+  padding: 40px 20px;
   min-height: 100svh;
+}
+
+.logoutBtn {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0;
+  margin-top: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.logoutBtn:hover,
+.logoutBtn:focus-visible {
+  color: #fff;
+}
+
+.logoutBtn:active {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .logo {

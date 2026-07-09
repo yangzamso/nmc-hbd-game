@@ -6,16 +6,22 @@ import { updateSlot, adminVerifySlot6, resetSlots as resetSlotsApi } from '../ut
 
 const GAME_POOL = COSTUMES.filter((c) => c.id !== 'strawberry').map((c) => c.id)
 
+const SESSION_INITIAL_STATE = {
+  screen: 'auth',
+  nickname: '',
+  password: '',
+  activeSlotId: null,
+  slots: EMPTY_SLOTS,
+}
+
 export const useSessionStore = create(
   persist(
     (set, get) => ({
-      screen: 'auth', // 'auth' | 'hub' | 'game' | 'dressup'
-      nickname: '',
-      password: '', // 인증된 슬롯 갱신 요청에 재사용 — localStorage에 nickname/slots와 함께 저장돼 새로고침해도 로그인 유지됨
-      activeSlotId: null,
-      slots: EMPTY_SLOTS,
+      ...SESSION_INITIAL_STATE,
 
-      login: (nickname, password, slots) => set({ nickname, password, slots: slots ?? EMPTY_SLOTS, screen: 'hub' }),
+      login: (nickname, password, slots) =>
+        set({ nickname, password, slots: slots ?? EMPTY_SLOTS, screen: 'hub' }),
+      logout: () => set({ ...SESSION_INITIAL_STATE }),
       openSlot: (slotId) => set({ activeSlotId: slotId, screen: 'game' }),
       backToHub: () => set({ activeSlotId: null, screen: 'hub' }),
       goToDressup: () => set({ screen: 'dressup' }),
@@ -32,7 +38,6 @@ export const useSessionStore = create(
         set({ slots })
       },
 
-      // 로컬 개발용 — 슬롯 전체 초기화
       resetSlots: async () => {
         const { nickname, password } = get()
         const { slots } = await resetSlotsApi(nickname, password)
@@ -48,9 +53,11 @@ export const useSessionStore = create(
     }),
     {
       name: 'nmc-session',
-      // screen/activeSlotId는 저장하지 않음 — 새로고침 시 특정 게임 화면 한가운데로 복귀하면 어색하므로
-      // 항상 허브로 복귀시키고(닉네임이 있으면), 그 판단은 아래 onRehydrateStorage에서 처리
-      partialize: (state) => ({ nickname: state.nickname, password: state.password, slots: state.slots }),
+      partialize: (state) => ({
+        nickname: state.nickname,
+        password: state.password,
+        slots: state.slots,
+      }),
       onRehydrateStorage: () => (state) => {
         if (state?.nickname) state.screen = 'hub'
       },

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSessionStore } from '../store/sessionStore'
+import { useGameStore } from '../store/gameStore'
 import { SLOTS } from '../data/slots'
 import { COSTUMES } from '../data/costumes'
 import styles from './HubScreen.module.css'
@@ -13,6 +14,8 @@ export function HubScreen() {
   const openSlot = useSessionStore((s) => s.openSlot)
   const goToDressup = useSessionStore((s) => s.goToDressup)
   const resetSlots = useSessionStore((s) => s.resetSlots)
+  const logout = useSessionStore((s) => s.logout)
+  const resetBoard = useGameStore((s) => s.reset)
   const [resetting, setResetting] = useState(false)
 
   const clearedCount = Object.values(slots).filter(Boolean).length
@@ -26,10 +29,15 @@ export function HubScreen() {
     }
   }
 
+  function handleLogout() {
+    resetBoard()
+    logout()
+  }
+
   return (
     <div className={`${styles.hub} ${dusty.dustyBg}`}>
-      <img src="/logo.png" alt="NEED MORE CASH — 2026 HBD CAFE" className={styles.logo} />
-      <p className={styles.greeting}>{nickname}님, 게임을 하고 캐릭터 옷을 모아보세요!</p>
+      <img src="/logo.png" alt="NEED MORE CASH 2026 HBD CAFE" className={styles.logo} />
+      <p className={styles.greeting}>{nickname}님,<br></br> 게임하고 캐릭터 의상을 모아보세요</p>
       <p className={styles.progress}>{clearedCount} / 6 획득</p>
 
       <div className={styles.grid}>
@@ -63,10 +71,9 @@ export function HubScreen() {
         })}
       </div>
 
-      {/* 완주(6/6) 전에도 지금까지 모은 옷으로 미리 코디해볼 수 있도록 항상 노출 */}
-      <button className={styles.completeBtn} onClick={goToDressup}>코디하기</button>
+      <button className={styles.completeBtn} onClick={goToDressup}>캐릭터 코디하기</button>
+      <button className={styles.logoutBtn} onClick={handleLogout}>로그아웃</button>
 
-      {/* 로컬 개발용 — 프로덕션 빌드에서는 렌더링되지 않음 */}
       {import.meta.env.DEV && (
         <button className={styles.devResetBtn} onClick={handleReset} disabled={resetting}>
           {resetting ? '초기화 중...' : '슬롯 비우기'}
