@@ -1,12 +1,34 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { COSTUMES, PROPS, BACKGROUNDS, CHARACTER_CROP, CHAR_DISPLAY_W, CHAR_DISPLAY_H, CHAR_WIDTH_RATIO, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
 import { useGameStore } from '../store/gameStore'
+import { useSessionStore } from '../store/sessionStore'
 import { capturePhotoCard } from '../utils/savePhotoCard'
 import { PrintOverlay } from './PrintOverlay'
+import { WORN_OFFSET, CHAR_IMG_W as CATCH_CHAR_IMG_W } from '../games/CatchGame'
 import styles from './GameBoard.module.css'
 
 const charNatW = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const charNatH = CHARACTER_CROP.y2 - CHARACTER_CROP.y1
+
+const SNAP_RADIUS = 12 // 캐릭터의 "정위치"에서 이 반경(px) 안으로 드래그하면 자동으로 착 붙음 (모바일 터치 오차 감안)
+
+// 캐릭터 중심 좌표 — .character의 CSS(left:50%, top:calc(57.99% + 25px))와 반드시 동일해야 함
+function getCharacterCenter(stageR) {
+  return { x: stageR.width / 2, y: stageR.height * 0.5799 + 25 }
+}
+
+// 캐치캐치(WORN_OFFSET)에 저장된 옷별 착용 좌표를, 현재 스테이지의 캐릭터 크기(charW)에 맞게
+// 환산해 "정위치"를 구하고, 드래그 좌표가 SNAP_RADIUS 안이면 그 정위치로 스냅한다.
+// WORN_OFFSET은 캐치캐치 캐릭터 표시폭(CATCH_CHAR_IMG_W=140px) 기준이라 charW/140 비율로 스케일링.
+function snapToWornPosition(costumeId, pos, stageR, charW) {
+  const offset = WORN_OFFSET[costumeId]
+  if (!offset) return pos
+  const scale = charW / CATCH_CHAR_IMG_W
+  const center = getCharacterCenter(stageR)
+  const target = { x: center.x + offset.dx * scale, y: center.y + offset.dy * scale }
+  const dist = Math.hypot(pos.x - target.x, pos.y - target.y)
+  return dist <= SNAP_RADIUS ? target : pos
+}
 
 // 스테이지 실측 폭 기준으로 캐릭터 크기를 계산 — 기기마다 스테이지 크기가 달라도 항상 같은 비율로 보이게 함
 // (stageWidth가 아직 측정되지 않은 첫 렌더에서는 고정값(CHAR_DISPLAY_W/H)으로 폴백)
@@ -44,6 +66,10 @@ function farCorner(stageR) {
 
 export function GameBoard() {
   const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage, reset } = useGameStore()
+  const slots = useSessionStore((s) => s.slots)
+  const backToHub = useSessionStore((s) => s.backToHub)
+  const ownedIds = Object.values(slots).filter(Boolean)
+  const ownedCostumes = COSTUMES.filter((c) => ownedIds.includes(c.id))
   const stageRef = useRef(null)
   const boardRef = useRef(null)
 
@@ -121,13 +147,15 @@ export function GameBoard() {
     if (!stageR) return
     if (stageDrag && placed) {
       const raw = { x: e.clientX - stageDrag.offsetX - stageR.left, y: e.clientY - stageDrag.offsetY - stageR.top }
-      setPlaced((p) => ({ ...p, ...clampToStage(raw.x, raw.y, stageR) }))
+      const clamped = clampToStage(raw.x, raw.y, stageR)
+      const snapped = snapToWornPosition(placed.costumeId, clamped, stageR, charW)
+      setPlaced((p) => ({ ...p, ...snapped }))
     } else if (propDrag) {
       const raw = { x: e.clientX - propDrag.offsetX - stageR.left, y: e.clientY - propDrag.offsetY - stageR.top }
       const clamped = clampToStage(raw.x, raw.y, stageR)
       setPlacedProps((prev) => prev.map((p) => p.propId === propDrag.propId ? { ...p, ...clamped } : p))
     }
-  }, [stageDrag, placed, propDrag])
+  }, [stageDrag, placed, propDrag, charW])
 
   // ── 스테이지 내 포인터 업 ──
   const onStagePointerUp = useCallback(() => {
@@ -240,7 +268,7 @@ export function GameBoard() {
         <div className={styles.section}>
           <p className={styles.sectionTitle}>의상</p>
           <div className={styles.row}>
-            {COSTUMES.map((costume) => {
+            {ownedCostumes.map((costume) => {
               const isPlaced = placed?.costumeId === costume.id
               return (
                 <div key={costume.id}
@@ -295,6 +323,7 @@ export function GameBoard() {
         </div>
 
         <div className={styles.saveSection}>
+          <button className={styles.prevBtn} disabled={saving} onClick={backToHub}>이전</button>
           <button className={styles.saveBtn} disabled={saving} onClick={onSave}>
             {saving ? '인쇄 중...' : '📸 인쇄!'}
           </button>

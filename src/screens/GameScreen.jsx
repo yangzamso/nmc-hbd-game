@@ -15,8 +15,8 @@ import dusty from '../styles/dustyBg.module.css'
 const costumeById = Object.fromEntries(COSTUMES.map((c) => [c.id, c]))
 
 // 슬롯1(카드뒤집기)/슬롯2(퀴즈)/슬롯3(룰렛)/슬롯4(캐치캐치)/슬롯6(럭키드로우)는 실제 화면으로 완성됨.
-// 슬롯5(흔들기)는 PRD상 개발 보류 상태이며, 허브에서 disabled 처리되어 애초에 이 화면에 진입할 수 없다
-// (아래 fallback 스켈레톤은 슬롯5가 나중에 열릴 때를 대비한 자리표시자).
+// 슬롯5(흔들기)는 PRD상 미니게임 자체(폰 흔들기 연출)는 개발 보류 상태지만, 탭하면 바로 남은 옷 중
+// 하나를 랜덤 지급하도록 임시로 열어둠 (아래 fallback 화면이 그 최소 버전 — 2026-07-09).
 export function GameScreen() {
   const activeSlotId = useSessionStore((s) => s.activeSlotId)
   const slots = useSessionStore((s) => s.slots)
@@ -133,8 +133,8 @@ export function GameScreen() {
     <div className={`${styles.screen} ${dusty.dustyBg}`}>
       <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
       <h2 className={styles.title}>{slot?.label}</h2>
-      <p className={styles.notice}>게임 화면 준비 중 (0단계 스켈레톤)</p>
-      <button className={styles.testClearBtn} onClick={handleGameClear}>테스트 클리어</button>
+      <p className={styles.notice}>미니게임은 준비 중이에요! 지금은 눌러서 바로 옷을 받아보세요.</p>
+      <button className={styles.testClearBtn} onClick={handleGameClear}>아이템 받기</button>
     </div>
   )
 }

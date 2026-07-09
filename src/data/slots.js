@@ -5,7 +5,7 @@ export const SLOTS = [
   { id: 3, game: 'roulette',  label: '룰렛' },
   { id: 2, game: 'quiz',      label: '퀴즈' },
   { id: 4, game: 'catch',     label: '캐치캐치' },
-  { id: 5, game: 'shake',     label: '흔들기',     disabled: true }, // 개발 보류 (기획만 존재)
+  { id: 5, game: 'shake',     label: '흔들기' }, // 흔들기 미니게임 자체는 아직 미구현 — 임시로 탭하면 바로 남은 옷 중 랜덤 지급 (2026-07-09)
   { id: 6, game: 'lucky',     label: '럭키드로우', special: true },  // 포토카드 구매 전용 (딸기)
 ]
 

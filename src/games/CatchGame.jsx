@@ -11,14 +11,16 @@ const SETTLE_DELAY_MS = 800
 const AJUSSI_INDEX = ITEMS.findIndex((c) => c.id === 'ajussi')
 
 // .characterImg의 실제 표시 너비(CSS)와 동일해야 옷 배율이 캐릭터와 일치함
-const CHAR_IMG_W = 140
+// CHAR_IMG_W/WORN_OFFSET을 export하는 이유: GameBoard.jsx(코디 화면)에서 옷을 드래그해 캐릭터
+// 근처로 가져가면 이 좌표로 자동 스냅되도록 재사용함 (2026-07-09)
+export const CHAR_IMG_W = 140
 const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
 
 // 의상별 착용 위치 보정(화면 표시 px 기준, dx: 오른쪽 +, dy: 아래로 +). 기본값(중앙 정렬)은 캐릭터와
 // 의상 이미지의 "중심"을 맞추는데, 의상마다 이미지 안에서 모자~옷 여백이 달라 그대로 겹치면 안경/옷깃이
 // 몸과 어긋난다. public/dev-tools/worn-offset-tuner.html 에서 실측 후 값을 복사해 붙여넣으면 됨.
-const WORN_OFFSET = {
+export const WORN_OFFSET = {
   raito: { dx: 2, dy: -19 },
   detective: { dx: 9, dy: -19 },
   ajussi: { dx: 2, dy: -6 },

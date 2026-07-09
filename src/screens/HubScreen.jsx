@@ -63,9 +63,8 @@ export function HubScreen() {
         })}
       </div>
 
-      {clearedCount === 6 && (
-        <button className={styles.completeBtn} onClick={goToDressup}>코디하러 가기</button>
-      )}
+      {/* 완주(6/6) 전에도 지금까지 모은 옷으로 미리 코디해볼 수 있도록 항상 노출 */}
+      <button className={styles.completeBtn} onClick={goToDressup}>코디하기</button>
 
       {/* 로컬 개발용 — 프로덕션 빌드에서는 렌더링되지 않음 */}
       {import.meta.env.DEV && (
