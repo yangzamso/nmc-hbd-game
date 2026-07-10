@@ -28,7 +28,7 @@ export const BACKGROUNDS = [
   { id: 'bg_lavender', label: '라벤더', image: '/bg/bg-lavender.jpg' },
   { id: 'bg_cabinet', label: '캐비넷', image: '/bg/bg-cabinet.jpg' },
   { id: 'bg_cartoon', label: '만화', image: '/bg/bg-cartoon.jpg' },
-  { id: 'bg_heart', label: '하트', image: '/bg/bg-cartoon-2.jpg' },
+  { id: 'bg_heart', label: '하트', image: '/bg/bg-heart.jpg' },
   { id: 'bg_blue_check', label: '블루체크', image: '/bg/bg-blue.jpg' },
 ]
 
