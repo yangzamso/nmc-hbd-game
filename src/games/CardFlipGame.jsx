@@ -29,7 +29,9 @@ export function CardFlipGame({ onClear }) {
   const [locked, setLocked] = useState(false)
 
   useEffect(() => {
-    if (matched.length === deck.length) onClear()
+    if (matched.length !== deck.length) return
+    const t = setTimeout(onClear, 2000) // 다 맞춘 카드를 잠깐 보여준 뒤 성공 화면으로 전환
+    return () => clearTimeout(t)
   }, [matched, deck.length, onClear])
 
   function handleCardClick(index) {
