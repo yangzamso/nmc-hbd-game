@@ -8,7 +8,7 @@
      .board 자체가 "정해진 높이"를 가져야 함 (min-height면 flex 계산 기준이 없어 패널이
      콘텐츠 크기만큼 커지면서 화면 밖으로 넘쳐버림, 2026-07-09) */
   height: 100svh;
-  background: #ffffff;
+  background: #302d2b;
   background-size: cover;
   background-position: center;
 }
@@ -27,7 +27,6 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  border-radius: 8px;
   overflow: hidden;
   touch-action: none;
 }
