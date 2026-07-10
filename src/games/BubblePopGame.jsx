@@ -1,0 +1,170 @@
+import { useEffect, useRef, useState } from 'react'
+import { COSTUMES } from '../data/costumes'
+import styles from './BubblePopGame.module.css'
+
+// 옷 5종 (딸기는 구매 전용이라 이 풀에서도 제외 — 다른 미니게임들과 동일한 풀 재사용)
+const ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
+const GOAL = 10
+const TIME_LIMIT_MS = 25000
+const SPAWN_INTERVAL_MS = 450
+const BUBBLE_LIFETIME_MS = 3500
+const TARGET_PROB = 0.4 // 목표 옷 방울이 나올 확률 (나머지는 디코이 4종에 고르게 분배)
+const TARGET_CHANGE_COUNT = 2 // 25초 동안 제시 옷이 총 2번 바뀜(=3구간). 바뀌는 순간 이전 목표 방울은 자동으로 디코이가 됨
+const TARGET_PHASE_MS = TIME_LIMIT_MS / (TARGET_CHANGE_COUNT + 1)
+
+function pickBubbleCostumeId(targetId) {
+  if (Math.random() < TARGET_PROB) return targetId
+  const decoys = ITEMS.filter((c) => c.id !== targetId)
+  return decoys[Math.floor(Math.random() * decoys.length)].id
+}
+
+function randomTarget() {
+  return ITEMS[Math.floor(Math.random() * ITEMS.length)]
+}
+
+// 슬롯5 방울 터트리기 — 제시된 옷 방울만 골라 터뜨려 제한시간(15초) 안에 목표 개수(10개)를 채우면 클리어.
+// 디코이(목표가 아닌 나머지 옷) 방울은 터뜨려도 무해 — 카운트만 안 될 뿐 페널티는 없음.
+// 실패해도(시간 내 미달성) 진행 자체는 막히지 않고, 퀴즈(슬롯2)와 동일하게 재도전 안내 후 바로 재시작 가능.
+export function BubblePopGame({ onClear, onFail }) {
+  const [target, setTarget] = useState(randomTarget)
+  const [targetChangeKey, setTargetChangeKey] = useState(0) // 바뀔 때마다 증가 — 제시 칩 등장 애니메이션 재생용
+  const [phase, setPhase] = useState('ready') // 'ready' | 'playing' | 'done'
+  const [bubbles, setBubbles] = useState([])
+  const [hits, setHits] = useState(0)
+  const [timeLeftMs, setTimeLeftMs] = useState(TIME_LIMIT_MS)
+
+  const spawnIntervalRef = useRef(null)
+  const tickIntervalRef = useRef(null)
+  const bubbleTimeoutsRef = useRef([])
+  const rotateTimeoutsRef = useRef([])
+  const finishTimeoutRef = useRef(null)
+  const deadlineRef = useRef(0)
+  const hitsRef = useRef(0)
+  const targetIdRef = useRef(target.id)
+  const nextIdRef = useRef(0)
+
+  useEffect(() => () => {
+    clearInterval(spawnIntervalRef.current)
+    clearInterval(tickIntervalRef.current)
+    bubbleTimeoutsRef.current.forEach(clearTimeout)
+    rotateTimeoutsRef.current.forEach(clearTimeout)
+    clearTimeout(finishTimeoutRef.current)
+  }, [])
+
+  function removeBubble(id) {
+    setBubbles((prev) => prev.filter((b) => b.id !== id))
+  }
+
+  function spawnBubble() {
+    const id = nextIdRef.current++
+    const costumeId = pickBubbleCostumeId(targetIdRef.current)
+    const x = 8 + Math.random() * 78 // 8%~86% (버블 자체 너비만큼 오른쪽 여유를 둠)
+    setBubbles((prev) => [...prev, { id, costumeId, x }])
+    const t = setTimeout(() => removeBubble(id), BUBBLE_LIFETIME_MS)
+    bubbleTimeoutsRef.current.push(t)
+  }
+
+  // 제시 옷 교체 — 화면에 이미 떠 있던 이전 목표 방울은 targetIdRef가 바뀌는 순간 자동으로 디코이 취급됨
+  function rotateTarget() {
+    const next = ITEMS.filter((c) => c.id !== targetIdRef.current)
+    const picked = next[Math.floor(Math.random() * next.length)]
+    targetIdRef.current = picked.id
+    setTarget(picked)
+    setTargetChangeKey((k) => k + 1)
+  }
+
+  function finish(success) {
+    clearInterval(spawnIntervalRef.current)
+    clearInterval(tickIntervalRef.current)
+    bubbleTimeoutsRef.current.forEach(clearTimeout)
+    bubbleTimeoutsRef.current = []
+    rotateTimeoutsRef.current.forEach(clearTimeout)
+    rotateTimeoutsRef.current = []
+    setPhase('done')
+    setBubbles([])
+    finishTimeoutRef.current = setTimeout(() => {
+      if (success) {
+        onClear()
+      } else {
+        setPhase('ready')
+        onFail()
+      }
+    }, 500)
+  }
+
+  function handleStart() {
+    const next = randomTarget()
+    targetIdRef.current = next.id
+    setTarget(next)
+    setTargetChangeKey(0)
+    hitsRef.current = 0
+    setHits(0)
+    setBubbles([])
+    setPhase('playing')
+    deadlineRef.current = Date.now() + TIME_LIMIT_MS
+    setTimeLeftMs(TIME_LIMIT_MS)
+
+    rotateTimeoutsRef.current = Array.from({ length: TARGET_CHANGE_COUNT }, (_, i) =>
+      setTimeout(rotateTarget, TARGET_PHASE_MS * (i + 1))
+    )
+
+    spawnIntervalRef.current = setInterval(spawnBubble, SPAWN_INTERVAL_MS)
+    tickIntervalRef.current = setInterval(() => {
+      const remain = deadlineRef.current - Date.now()
+      if (remain <= 0) {
+        finish(false)
+        return
+      }
+      setTimeLeftMs(remain)
+    }, 100)
+  }
+
+  function popBubble(bubble) {
+    removeBubble(bubble.id)
+    if (bubble.costumeId !== targetIdRef.current) return // 디코이 — 무해, 카운트 안 됨
+    hitsRef.current += 1
+    setHits(hitsRef.current)
+    if (hitsRef.current >= GOAL) finish(true)
+  }
+
+  const timeLeftSec = Math.max(0, Math.ceil(timeLeftMs / 1000))
+
+  return (
+    <div className={styles.wrap}>
+      <div className={styles.targetRow}>
+        <span className={styles.targetLabel}>이 옷을 찾아 터뜨리세요!</span>
+        <div key={targetChangeKey} className={styles.targetChip}>
+          <img src={target.image} alt={target.name} className={styles.targetImg} />
+          <span className={styles.targetName}>{target.name}</span>
+        </div>
+      </div>
+
+      {phase === 'playing' && (
+        <div className={styles.hud}>
+          <span className={styles.timer}>⏱ {timeLeftSec}초</span>
+          <span className={styles.progress}>{hits} / {GOAL}</span>
+        </div>
+      )}
+
+      <div className={styles.stage}>
+        {bubbles.map((b) => {
+          const costume = ITEMS.find((c) => c.id === b.costumeId)
+          return (
+            <button
+              key={b.id}
+              className={styles.bubble}
+              style={{ left: `${b.x}%`, animationDuration: `${BUBBLE_LIFETIME_MS}ms` }}
+              onClick={() => popBubble(b)}
+            >
+              <img src={costume.image} alt={costume.name} className={styles.bubbleImg} draggable={false} />
+            </button>
+          )
+        })}
+
+        {phase === 'ready' && (
+          <button className={styles.startBtn} onClick={handleStart}>START</button>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -86,8 +86,51 @@ export function GameBoard() {
   const [stageWidth, setStageWidth] = useState(null)
 
   const { w: charW, h: charH, scale: charScale } = useCharSize(stageWidth)
+  const placedCostume = placed ? COSTUMES.find((c) => c.id === placed.costumeId) : null
 
   const getStageRect = () => stageRef.current?.getBoundingClientRect()
+
+  const getPrintLayout = useCallback(() => {
+    const stageR = getStageRect()
+    if (!stageR) return null
+
+    const characterCenter = getCharacterCenter(stageR)
+    const costume = placed && placedCostume
+      ? (() => {
+        const { w, h } = getCostumeDisplaySize(placedCostume, charScale)
+        return {
+          image: placedCostume.image,
+          width: w,
+          height: h,
+          relX: placed.x - characterCenter.x,
+          relY: placed.y - characterCenter.y,
+        }
+      })()
+      : null
+
+    const props = placedProps
+      .map((pp) => {
+        const prop = PROPS.find((p) => p.id === pp.propId)
+        if (!prop) return null
+        return {
+          id: prop.id,
+          image: prop.image,
+          width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR * (prop.propScale ?? 1)),
+          rotate: prop.rotate ?? 0,
+          flipX: Boolean(prop.flipX),
+          relX: pp.x - characterCenter.x,
+          relY: pp.y - characterCenter.y,
+        }
+      })
+      .filter(Boolean)
+
+    return {
+      stageWidth: stageR.width,
+      character: { width: charW, height: charH },
+      costume,
+      props,
+    }
+  }, [placed, placedCostume, placedProps, charScale, charW, charH])
 
   // 스테이지 실측 폭 추적 — svh 기반이라 기기별로 값이 다르고, 리사이즈/방향전환 시에도 갱신
   useEffect(() => {
@@ -167,18 +210,18 @@ export function GameBoard() {
     setPropDrag(null)
   }, [])
 
-  const placedCostume = placed ? COSTUMES.find((c) => c.id === placed.costumeId) : null
-
   const onSave = useCallback(async () => {
     if (!stageRef.current || saving) return
     setSaving(true)
     try {
-      const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
+      const printLayout = getPrintLayout()
+      if (!printLayout) return
+      const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage, printLayout)
       setPrintData(dataUrl)
     } finally {
       setSaving(false)
     }
-  }, [bgColor, bgImage, saving])
+  }, [bgColor, bgImage, saving, getPrintLayout])
 
   return (
     <div ref={boardRef} className={styles.board}
@@ -239,7 +282,7 @@ export function GameBoard() {
                   position: 'absolute',
                   left: pp.x,
                   top: pp.y,
-                  transform: `translate(-50%,-50%) rotate(${prop.rotate ?? 0}deg)`,
+                  transform: `translate(-50%,-50%) scaleX(${prop.flipX ? -1 : 1}) rotate(${prop.rotate ?? 0}deg)`,
                   width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR * (prop.propScale ?? 1)),
                   objectFit: 'contain',
                   cursor: propDrag?.propId === pp.propId ? 'grabbing' : 'grab',
@@ -297,7 +340,13 @@ export function GameBoard() {
                 <div key={prop.id}
                   className={`${styles.card} ${isPlaced ? styles.cardActive : ''} ${isDisabled ? styles.cardDisabled : ''}`}
                   onClick={() => !isDisabled && onPropClick(prop.id)}>
-                  <img src={prop.image} alt={prop.name} className={styles.cardImg} draggable={false} />
+                  <img
+                    src={prop.image}
+                    alt={prop.name}
+                    className={styles.cardImg}
+                    draggable={false}
+                    style={{ transform: `scaleX(${prop.flipX ? -1 : 1})` }}
+                  />
                   <span className={styles.cardName}>{prop.name}</span>
                   {isPlaced && <span className={styles.badge}>ON</span>}
                 </div>

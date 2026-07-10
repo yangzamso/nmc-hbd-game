@@ -73,3 +73,42 @@
   box-shadow: 0 4px 16px rgba(255, 107, 157, 0.35);
 }
 .submitBtn:active { transform: scale(0.97); opacity: 0.9; }
+
+/* 로컬 개발용 — HubScreen.module.css의 devResetBtn과 동일한 스타일 계열, 우하단 고정 */
+.devTools {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.devToolsBtn {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.devToolsBtn:active {
+  background: rgba(0, 0, 0, 0.6);
+}
+.devToolsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.devToolsPanel a {
+  font-size: 12px;
+  color: #ffb98a;
+  text-decoration: underline;
+}
