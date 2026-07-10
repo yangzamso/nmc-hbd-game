@@ -6,7 +6,7 @@ import styles from './BubblePopGame.module.css'
 const TARGET_ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
 // 방울로 나타날 수 있는 옷 — 딸기 포함 6종 전부(디코이로만 등장, 목표로는 안 나옴)
 const BUBBLE_ITEMS = COSTUMES
-const GOAL = 15
+const GOAL = 20
 const TIME_LIMIT_MS = 20000
 const SPAWN_INTERVAL_MS = 267 // 20초 ÷ 267ms ≈ 총 방울 75개 (70~80개 대비용 여유분)
 const BUBBLE_LIFETIME_MS = 3200 // 동시 체공 개수 ≈ LIFETIME/SPAWN_INTERVAL = 12개
@@ -89,15 +89,15 @@ export function BubblePopGame({ onClear, onFail }) {
         onClear()
       } else {
         setPhase('ready')
+        setHits(0)
+        setTimeLeftMs(TIME_LIMIT_MS)
         onFail()
       }
     }, 500)
   }
 
   function handleStart() {
-    const next = randomTarget()
-    targetIdRef.current = next.id
-    setTarget(next)
+    // 슬롯 진입 시 처음 제시된 옷을 그대로 유지 — START를 눌러도(재도전 포함) 목표가 바뀌지 않음
     setTargetChangeKey(0)
     hitsRef.current = 0
     setHits(0)
@@ -145,6 +145,11 @@ export function BubblePopGame({ onClear, onFail }) {
         </div>
       </div>
 
+      <div className={styles.hud}>
+        <span className={styles.timer}>⏱ {timeLeftSec}초</span>
+        <span className={styles.progress}>{hits} / {GOAL}</span>
+      </div>
+
       <div className={styles.stage}>
         {bubbles.map((b) => {
           const costume = BUBBLE_ITEMS.find((c) => c.id === b.costumeId)
@@ -163,11 +168,6 @@ export function BubblePopGame({ onClear, onFail }) {
         {phase === 'ready' && (
           <button className={styles.startBtn} onClick={handleStart}>START</button>
         )}
-      </div>
-
-      <div className={styles.hud} style={{ visibility: phase === 'playing' ? 'visible' : 'hidden' }}>
-        <span className={styles.timer}>⏱ {timeLeftSec}초</span>
-        <span className={styles.progress}>{hits} / {GOAL}</span>
       </div>
     </div>
   )
