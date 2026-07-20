@@ -48,6 +48,22 @@
   margin-bottom: 8px;
 }
 
+.difficultyRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.difficultyRow .testClearBtn {
+  padding: 8px 28px;
+}
+
+.difficultyInactive {
+  opacity: 0.45;
+}
+
 .testClearBtn {
   position: relative;
   z-index: 1;

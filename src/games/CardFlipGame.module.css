@@ -8,6 +8,12 @@
   max-width: 280px;
 }
 
+.hard {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  max-width: 320px;
+}
+
 .card {
   aspect-ratio: 3 / 4;
   border: none;

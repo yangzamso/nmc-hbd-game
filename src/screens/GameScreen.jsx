@@ -25,6 +25,7 @@ export function GameScreen() {
   const [reward, setReward] = useState(null)
   const [showQuizFail, setShowQuizFail] = useState(false)
   const [showBubbleFail, setShowBubbleFail] = useState(false)
+  const [cardDifficulty, setCardDifficulty] = useState('easy')
 
   const slot = SLOTS.find((s) => s.id === activeSlotId)
 
@@ -64,7 +65,21 @@ export function GameScreen() {
       <div className={`${styles.screen} ${dusty.dustyBg}`}>
         <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
         <h2 className={styles.title}>{slot.label}</h2>
-        <CardFlipGame onClear={handleGameClear} />
+        <div className={styles.difficultyRow}>
+          <button
+            className={`${styles.testClearBtn} ${cardDifficulty === 'easy' ? '' : styles.difficultyInactive}`}
+            onClick={() => setCardDifficulty('easy')}
+          >
+            이지
+          </button>
+          <button
+            className={`${styles.testClearBtn} ${cardDifficulty === 'hard' ? '' : styles.difficultyInactive}`}
+            onClick={() => setCardDifficulty('hard')}
+          >
+            하드
+          </button>
+        </div>
+        <CardFlipGame key={cardDifficulty} difficulty={cardDifficulty} onClear={handleGameClear} />
       </div>
     )
   }
